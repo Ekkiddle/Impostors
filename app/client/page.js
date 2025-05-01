@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { initPeer, connectToPeer, sendToAll, clearConnections } from '../peer/peerManager';
 import { handleClientMessages } from '../game/gameManager';
@@ -5,7 +7,7 @@ import { handleClientMessages } from '../game/gameManager';
 import SpaceBackground from '../components/SpaceBackground';
 import PlayerList from '../components/PlayerList';
 
-export default function Home() {
+export default function Lobby() {
   const [joined, setJoined] = useState(false);
   const [hostId, setHostId] = useState('');
   const [name, setName] = useState('');
@@ -13,29 +15,25 @@ export default function Home() {
   const handleJoinClick = async () => {
     setJoined(true);
     clearConnections();
-    await(initPeer(null, handleClientMessages ));
+    await initPeer(null, handleClientMessages);
     console.log(`Attempting to connect to ${hostId}`);
-    // connect to the peer
+    
     try {
       await connectToPeer(hostId, handleClientMessages);
       console.log("Connection successful!");
-      
-      // Now safe to send message
       sendToAll(`name|${name}`);
-      // Other initial game logic...
     } catch (err) {
       console.error("Failed to connect:", err);
       alert("Could not connect to host. Please check the code and try again.");
     }
   };
-  
+
   if (!joined) {
     return (
       <div className="w-screen h-screen overflow-hidden font-orbitron">
         <SpaceBackground />
         <div className='w-full h-full flex flex-col justify-center items-center gap-y-4 p-10'>
           <div className="flex flex-col items-end gap-y-2">
-            {/* Game ID Field */}
             <div className="flex flex-row items-center gap-x-2">
               <label className="text-white" htmlFor="hostId">Game Code:</label>
               <input
@@ -51,8 +49,6 @@ export default function Home() {
                 className="border-2 rounded-md text-white bg-black px-2"
               />
             </div>
-
-            {/* Username Field */}
             <div className="flex flex-row items-center gap-x-2">
               <label className="text-white" htmlFor="name">Username:</label>
               <input
@@ -83,16 +79,16 @@ export default function Home() {
         <SpaceBackground />
         <div className='w-full h-full flex flex-col items-center justify-between p-10'>
           <div className='w-full flex flex-col items-center'>
-          <div className="w-full mt-4 items-center flex flex-col">
-            <p className="text-green-600 text-xl">Players:</p>
-          </div>
-          <div className="w-full max-h-[60vh] overflow-y-scroll mt-4">
+            <div className="w-full mt-4 items-center flex flex-col">
+              <p className="text-green-600 text-xl">Players:</p>
+            </div>
+            <div className="w-full max-h-[60vh] overflow-y-scroll mt-4">
               <PlayerList />
-          </div>
+            </div>
           </div>
           <p className='text-white text-lg mb-10'>Waiting for host to start the game</p>
         </div>
       </div>
-    )
+    );
   }
 }
