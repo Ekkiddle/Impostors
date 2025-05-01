@@ -1,25 +1,24 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import { PeerProvider } from "./peer/peerProvider";
 import { GameProvider, useGame } from "./game/gameProvider";
 import { registerPlayerSetter } from "./game/gameManager";
 
 import Home from "./pages/Home";
 import Lobby from "./pages/Lobby";
+import HostScreen from "./pages/Host";
 
 function App() {
   return (
     <GameProvider>
       <RegisterGameManager />
-      <PeerProvider>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/host" element={<HostScreen />} />
             <Route path="/lobby" element={<Lobby />} />
           </Routes>
         </Router>
-      </PeerProvider>
     </GameProvider>
   );
 }

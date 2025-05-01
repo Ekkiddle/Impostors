@@ -1,31 +1,19 @@
 import React, { useState } from 'react';
-import { initPeer, connectToPeer, sendToPeer } from '../peer/peerManager';
-import { usePeer } from '../peer/peerProvider';
+import { initPeer, connectToPeer, sendToAll, clearConnections } from '../peer/peerManager';
+import { handleClientMessages } from '../game/gameManager';
 
-import { handleClientMessages, handleHostMessages } from '../game/gameManager';
+import SpaceBackground from '../components/SpaceBackground';
+import PlayerList from '../components/PlayerList';
 
-export default function LobbySetup() {
-
-  const {
-    myId, setMyId,
-    hostId, setHostId,
-  } = usePeer();
-
-  const [hosting, setHosting] = useState(false);
+export default function Home() {
+  const [joined, setJoined] = useState(false);
+  const [hostId, setHostId] = useState('');
   const [name, setName] = useState('');
 
-  const handleHostClick = async () => {
-    await(initPeer(null, handleHostMessages, (peerId) => {
-      setMyId(peerId);
-    } ));
-    setHosting(true);
-  };
-
-  const handleClientClick = async () => {
-    setHosting(false);
-    await(initPeer(null, handleClientMessages, (peerId) => {
-      setMyId(peerId);
-    } ));
+  const handleJoinClick = async () => {
+    setJoined(true);
+    clearConnections();
+    await(initPeer(null, handleClientMessages ));
     console.log(`Attempting to connect to ${hostId}`);
     // connect to the peer
     try {
@@ -33,7 +21,7 @@ export default function LobbySetup() {
       console.log("Connection successful!");
       
       // Now safe to send message
-      sendToPeer(hostId, `name|${name}`);
+      sendToAll(`name|${name}`);
       // Other initial game logic...
     } catch (err) {
       console.error("Failed to connect:", err);
@@ -41,57 +29,70 @@ export default function LobbySetup() {
     }
   };
   
+  if (!joined) {
+    return (
+      <div className="w-screen h-screen overflow-hidden font-orbitron">
+        <SpaceBackground />
+        <div className='w-full h-full flex flex-col justify-center items-center gap-y-4 p-10'>
+          <div className="flex flex-col items-end gap-y-2">
+            {/* Game ID Field */}
+            <div className="flex flex-row items-center gap-x-2">
+              <label className="text-white" htmlFor="hostId">Game Code:</label>
+              <input
+                type="text"
+                id="hostId"
+                name="hostId"
+                value={hostId}
+                onChange={(e) => setHostId(e.target.value)}
+                required
+                minLength="6"
+                maxLength="6"
+                size="10"
+                className="border-2 rounded-md text-white bg-black px-2"
+              />
+            </div>
 
-  return (
-    <div className="p-4 flex flex-col">
-      <div>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleHostClick}
-        >
-          Host Game
-        </button>
+            {/* Username Field */}
+            <div className="flex flex-row items-center gap-x-2">
+              <label className="text-white" htmlFor="name">Username:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                maxLength="15"
+                size="10"
+                className="border-2 rounded-md text-white bg-black px-2"
+              />
+            </div>
+          </div>
+          <button
+            className="bg-black border-2 border-stone-400 text-white px-4 py-2 rounded-lg w-full max-w-64 hover:bg-stone-950 hover:border-white"
+            onClick={handleJoinClick}
+          >
+            Join Game
+          </button>
+        </div>
       </div>
-      <div className='flex flex-col justify-center items-center'>
-        <div className='gap-4'>
-          <label>Game ID: </label>
-          <input
-            type="text"
-            id="hostId"
-            name="hostId"
-            value={hostId}
-            onChange={(e) => setHostId(e.target.value)}
-            required
-            minLength="6"
-            maxLength="6"
-            size="10" 
-            className="border-2 rounded-md"/>
+    );
+  } else {
+    return (
+      <div className="w-screen h-screen overflow-hidden font-orbitron">
+        <SpaceBackground />
+        <div className='w-full h-full flex flex-col items-center justify-between p-10'>
+          <div className='w-full flex flex-col items-center'>
+          <div className="w-full mt-4 items-center flex flex-col">
+            <p className="text-green-600 text-xl">Players:</p>
+          </div>
+          <div className="w-full max-h-[60vh] overflow-y-scroll mt-4">
+              <PlayerList />
+          </div>
+          </div>
+          <p className='text-white text-lg mb-10'>Waiting for host to start the game</p>
         </div>
-        <div>
-          <label>Username: </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            size="10" 
-            className="border-2 rounded-md"/>
-        </div>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded w-64"
-          onClick={handleClientClick}
-        >
-          Join Game
-        </button>
       </div>
-      {myId && hosting && (
-        <div className="mt-4">
-          <p className="text-green-600">Hosting with Peer ID:</p>
-          <code>{myId}</code>
-        </div>
-      )}
-    </div>
-  );
+    )
+  }
 }
