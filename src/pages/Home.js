@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpaceBackground from '../components/SpaceBackground';
+import { clearConnections } from '../peer/peerManager';
+import { clearPlayers } from '../game/gameManager';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -16,7 +18,10 @@ export default function Home() {
         </h1>
         <button
           className="bg-black border-2 border-stone-400 text-white px-4 py-2 rounded-lg w-full max-w-64 hover:bg-stone-950 hover:border-white"
-          onClick={() => {navigate('/host')}}
+          onClick={() => {
+            clearConnections();
+            clearPlayers();
+            navigate('/host')}}
         >
           Host Game
         </button>

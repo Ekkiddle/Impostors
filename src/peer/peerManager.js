@@ -70,7 +70,7 @@ export const initPeer = (onConnection, onRecieve, onReady, onClose, onError) => 
   });
 };
 
-export const connectToPeer = (peerId, onRecieve, onOpen, onError) => {
+export const connectToPeer = (peerId, onRecieve, onOpen, onClose, onError) => {
   return new Promise((resolve, reject) => {
     const conn = peer.connect(peerId);
     connections[peerId] = conn;
@@ -93,6 +93,7 @@ export const connectToPeer = (peerId, onRecieve, onOpen, onError) => {
       delete connections[conn.peer];
       delete connIds[connIds.indexOf(conn.peer)];
       sessionStorage.setItem('connections', connIds); 
+      if (onClose) onClose(conn.peer);
     });
 
     conn.on('error', (err) => {
@@ -103,6 +104,14 @@ export const connectToPeer = (peerId, onRecieve, onOpen, onError) => {
   });
 };
 
+export const disconnectPeer = (peerId) => {
+  let conn = connections[peerId];
+  conn.close();
+  delete connections[conn.peer];
+  delete connIds[connIds.indexOf(conn.peer)];
+  sessionStorage.setItem('connections', connIds);
+}
+
 export const reconnect = async (onRecieve, onReady, onOpen, onError) => {
   try {
     if (!peer) {
@@ -111,13 +120,15 @@ export const reconnect = async (onRecieve, onReady, onOpen, onError) => {
       console.log("Peer already exists. Skipping init.");
     }
 
-    if (!connections){
-      const conns = sessionStorage.getItem('connections') | [];
+    if (Object.keys(connections).length === 0){
+      const conns = sessionStorage.getItem('connections') || [];
+      console.log("Reconnecting to connections", conns)
       for (const connId in conns){
         await connectToPeer(connId, onRecieve, onOpen, onError);
         console.log(`Reconnected and connected to peer ${connId}`);
       }
     } else {
+      console.log(connections);
       console.log("Connections already established")
     }
   } catch (err) {
@@ -127,6 +138,9 @@ export const reconnect = async (onRecieve, onReady, onOpen, onError) => {
 };
 
 export const clearConnections = () => {
+  for (const ids in connIds){
+    disconnectPeer(ids);
+  }
   connIds = []
   sessionStorage.setItem('connections', connIds); 
   connections = {}
@@ -134,6 +148,7 @@ export const clearConnections = () => {
 
 
 export const sendToAll = (data) => {
+  reconnect();
   console.log("Broadcasting to:", connections);
   console.log("Broadcasting data: ", data);
   Object.values(connections).forEach((conn) => {

@@ -1,6 +1,5 @@
 // Game manager file to keep track of game components
 import { sendToAll, sendToPeer } from "../peer/peerManager";
-import { useGame } from "./gameProvider";
 
 
 const players = new Map(); // key: playerId, value: { id, name, role, alive, tasks }
@@ -97,8 +96,11 @@ const reloadPlayers = () => {
         players.set(id, playerData);
       });
 
+      
+      
+      const playersObj = Object.fromEntries(players);
       // Call the updatePlayersState function if defined
-      if (updatePlayersState) updatePlayersState(players);
+      if (updatePlayersState) updatePlayersState(playersObj);
     }
   }
 };
@@ -109,7 +111,7 @@ const addPlayer = (id, name) => {
     id,
     name,
     color,
-    connection: 'active',
+    connected: true,
     alive: true,
     role: 'pending',
     tasks: []
@@ -140,7 +142,7 @@ const changeAlive = (id, alive) => {
   broadcastPlayers();
 }
 
-export const activeStatus = (id, status) => {
+export const changeConnection = (id, status) => {
   const existingPlayer = players.get(id);
   existingPlayer.connection = status; // update the name
   players.set(id, existingPlayer);
@@ -151,6 +153,19 @@ export const removePlayer = (id) => {
   players.delete(id);
   broadcastPlayers();
 };
+
+export const clearPlayers = () => {
+  console.log("Clearing players")
+  players.clear();
+  console.log("Test cleared: ", players)
+  const playersObj = Object.fromEntries(players);
+  const playerString = JSON.stringify(playersObj);
+  sessionStorage.setItem('players', playerString);
+  if (updatePlayersState) {
+    console.log("Updating state")
+    updatePlayersState(playersObj);
+  } 
+}
 
 export const assignRoles = () => {
   reloadPlayers();
