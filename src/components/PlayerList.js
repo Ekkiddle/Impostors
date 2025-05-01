@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGame } from '../game/gameProvider';
 import SpaceManIcon from './SpaceManIcon';
-import LoadingSpinner from './LoadingIcon';
+import LoadingDots from './LoadingIcon';
 
 export default function PlayerList() {
   const { players } = useGame();
@@ -10,7 +10,7 @@ export default function PlayerList() {
     return (
         <div className='flex flex-col h-full w-full items-center'>
             <p className="text-gray-500 italic">No players connected yet.</p>
-            <LoadingSpinner />
+            <LoadingDots />
         </div>
     );
   }

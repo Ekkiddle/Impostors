@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { reconnect, getMyId } from "../peer/peerManager";
-import { handleHostMessages } from "../game/gameManager";
+import { assignRoles, handleHostMessages } from "../game/gameManager";
 
 
 import SpaceBackground from "../components/SpaceBackground"
 import PlayerList from "../components/PlayerList";
-import LoadingSpinner from "../components/LoadingIcon";
+import LoadingDots from "../components/LoadingIcon";
 
 
 export default function HostScreen() {
@@ -26,7 +26,8 @@ export default function HostScreen() {
 
     const handleGameStart = () => {
         // do something
-        console.log("You clicked a button")
+        console.log("Assigning Roles")
+        assignRoles();
     }
 
     // Function to show playerlist and whatnot...
@@ -37,7 +38,7 @@ export default function HostScreen() {
                 <div className="w-full flex flex-col items-center flex-grow">
                 <div className="w-full mt-4 items-center flex flex-col">
                     <p className="text-green-600 text-xl">GameCode:</p>
-                    {loading ? <LoadingSpinner /> : <code className="text-white">{myId}</code>}
+                    {loading ? <LoadingDots /> : <code className="text-white">{myId}</code>}
                 </div>
 
                 <div className="w-full h-[60vh] overflow-y-scroll mt-4 flex flex-col items-start">

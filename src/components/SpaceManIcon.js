@@ -1,28 +1,29 @@
 import React from "react";
 
-function darkenColor(hex, amount = 80) {
+function darkenColor(hex, amount = 0.3) {
     // Remove '#' if present
     hex = hex.replace(/^#/, '');
   
     // Parse r, g, b values
     const num = parseInt(hex, 16);
-    let r = (num >> 16) - amount;
-    let g = ((num >> 8) & 0x00FF) - amount;
-    let b = (num & 0x0000FF) - amount;
+    let r = (num >> 16) & 0xff;
+    let g = (num >> 8) & 0xff;
+    let b = num & 0xff;
   
-    // Clamp values to [0, 255]
-    r = Math.max(r, 0);
-    g = Math.max(g, 0);
-    b = Math.max(b, 0);
-    console.log(`Og: color = ${hex}`)
+    // Darken by the percentage of the original value
+    r = Math.max(0, r - r * amount);
+    g = Math.max(0, g - g * amount);
+    b = Math.max(0, b - b * amount);
+  
     // Convert back to hex and pad with zeros if necessary
     return (
       '#' +
       [r, g, b]
-        .map((c) => c.toString(16).padStart(2, '0'))
+        .map((c) => Math.round(c).toString(16).padStart(2, '0'))
         .join('')
     );
 }
+
   
 
 export default function SpaceManIcon({ size = 200, fill = '#da2821' }){

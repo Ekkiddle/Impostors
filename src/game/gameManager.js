@@ -1,5 +1,6 @@
 // Game manager file to keep track of game components
 import { sendToAll, sendToPeer } from "../peer/peerManager";
+import { useGame } from "./gameProvider";
 
 
 const players = new Map(); // key: playerId, value: { id, name, role, alive, tasks }
@@ -69,18 +70,121 @@ export const handleClientMessages = (hostId, data) => {
     }
 };
 
-
 // --------------------------------------------------------------------------------------
 // Interact with players
 // --------------------------------------------------------------------------------------
 
 const broadcastPlayers = () => {
+  reloadPlayers();
   const playersObj = Object.fromEntries(players);
-  const send = `players|${JSON.stringify(playersObj)}`;
+  const playerString = JSON.stringify(playersObj);
+  sessionStorage.setItem('players', playerString);
+  const send = `players|${playerString}`;
   sendToAll(send);
   if (updatePlayersState) updatePlayersState(playersObj);
 };
 
+// Reload players if lost
+const reloadPlayers = () => {
+  if (players.size === 0) {  // Check if the players map is empty
+    const playersObj = JSON.parse(sessionStorage.getItem('players'));
+    
+    if (playersObj) {  // Ensure playersObj is not null
+      players.clear();  // Clear the current map to start fresh
+
+      // Populate the map with the stored players
+      Object.entries(playersObj).forEach(([id, playerData]) => {
+        players.set(id, playerData);
+      });
+
+      // Call the updatePlayersState function if defined
+      if (updatePlayersState) updatePlayersState(players);
+    }
+  }
+};
+
+const addPlayer = (id, name) => {
+  const color = generateUniqueColor();
+  players.set(id, {
+    id,
+    name,
+    color,
+    connection: 'active',
+    alive: true,
+    role: 'pending',
+    tasks: []
+  });
+  broadcastPlayers();
+};
+
+const changeName = (id, name) => {
+  const existingPlayer = players.get(id);
+  existingPlayer.name = name; // update the name
+  players.set(id, existingPlayer);
+  broadcastPlayers();
+}
+
+const changeColor = (id, color) => {
+  if (!isColorTaken(color)){
+    const existingPlayer = players.get(id);
+    existingPlayer.color = color; // update the name
+    players.set(id, existingPlayer);
+    broadcastPlayers();
+  }
+}
+
+const changeAlive = (id, alive) => {
+  const existingPlayer = players.get(id);
+  existingPlayer.alive = alive; // update the name
+  players.set(id, existingPlayer);
+  broadcastPlayers();
+}
+
+export const activeStatus = (id, status) => {
+  const existingPlayer = players.get(id);
+  existingPlayer.connection = status; // update the name
+  players.set(id, existingPlayer);
+  broadcastPlayers();
+}
+
+export const removePlayer = (id) => {
+  players.delete(id);
+  broadcastPlayers();
+};
+
+export const assignRoles = () => {
+  reloadPlayers();
+  const ids = Array.from(players.keys());
+  const shuffled = shuffleArray(ids);
+  // default impostors:crewmates is 1:4 Second impostor at 10 players
+  const impostorCount = Math.max(1, Math.floor(shuffled.length / 5));
+  
+  shuffled.forEach((id, i) => {
+    const player = players.get(id);
+    player.role = i < impostorCount ? 'impostor' : 'crewmate';
+    player.tasks = generateTasks();
+    players.set(id, player);
+  });
+  broadcastPlayers();
+};
+
+export const getGameState = () => {
+  return Array.from(players.values());
+};
+
+const generateTasks = () => {
+  const taskPool = ['task1', 'task2', 'task3', 'task4'];
+  return shuffleArray(taskPool).slice(0, 3);
+};
+
+const checkWinConditions = () => {
+  // if there are more (or equal) number of impostors to players, impostors win.
+  // if all of the tasks are done, or there are no more impostors, crewmates win.
+};
+
+
+// ------------------------------------------------------------------------------------
+// Miscelanious
 
 const getRandomBrightColor = () => {
   // Keep brightness above 0x17 for each channel (to avoid dark colors)
@@ -114,77 +218,10 @@ const generateUniqueColor = () => {
   return color;
 };
 
-const addPlayer = (id, name) => {
-  const color = generateUniqueColor();
-  players.set(id, {
-    id,
-    name,
-    color,
-    connection: 'active',
-    alive: true,
-    role: 'pending',
-    tasks: []
-  });
-  broadcastPlayers();
-};
-
-
-const changeName = (id, name) => {
-  const existingPlayer = players.get(id);
-  existingPlayer.name = name; // update the name
-  players.set(id, existingPlayer);
-  broadcastPlayers();
-}
-
-const changeColor = (id, color) => {
-  const existingPlayer = players.get(id);
-  existingPlayer.color = color; // update the name
-  players.set(id, existingPlayer);
-  broadcastPlayers();
-}
-
-const changeAlive = (id, alive) => {
-  const existingPlayer = players.get(id);
-  existingPlayer.alive = alive; // update the name
-  players.set(id, existingPlayer);
-  broadcastPlayers();
-}
-
-export const activeStatus = (id, status) => {
-  const existingPlayer = players.get(id);
-  existingPlayer.connection = status; // update the name
-  players.set(id, existingPlayer);
-  broadcastPlayers();
-}
-
-export const removePlayer = (id) => {
-  players.delete(id);
-  broadcastPlayers();
-};
-
-export const assignRoles = () => {
-  const ids = Array.from(players.keys());
-  const shuffled = ids.sort(() => Math.random() - 0.5);
-  const impostorCount = Math.max(1, Math.floor(shuffled.length / 6));
-  
-  shuffled.forEach((id, i) => {
-    const player = players.get(id);
-    player.role = i < impostorCount ? 'impostor' : 'crewmate';
-    player.tasks = generateTasks();
-    players.set(id, player);
-  });
-};
-
-export const getGameState = () => {
-  return Array.from(players.values());
-};
-
-const generateTasks = () => {
-  const taskPool = ['task1', 'task2', 'task3', 'task4'];
-  return taskPool.sort(() => Math.random() - 0.5).slice(0, 3);
-};
-
-const checkWinConditions = () => {
-  // if there are more (or equal) number of impostors to players, impostors win.
-  // if all of the tasks are done, or there are no more impostors, crewmates win.
+const shuffleArray = (arr) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1)); // Random index between 0 and i
+    [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
+  }
+  return arr;
 };
