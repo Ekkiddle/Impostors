@@ -1,70 +1,29 @@
-# Getting Started with Create React App
+# Impostors
+This project was inspired by AmongUs, but I wanted to be able to play a game like that in person, with my friends. So, I am using a web-based React front end framework that will be hosted online, in conjunction with peer-2-peer architecture for managing game state without the use of a dynamic backend server.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Running the build
+Do it as you would any other react project
 
-## Available Scripts
+```bash
+npm run start
+```
 
-In the project directory, you can run:
+Connect clients and peers. One device must act as the host (please do not disconnect the host or refresh the browser, or there will be clear problems and will result in nobody being able to play the game (everyone will be disconnected)). I'll leave an opportunity for reconnect though.
 
-### `npm start`
+## Playing the Game
+Set the number of impostors you would like to play with (fixed, or percentage of players (rounded to nearest whole impostor))
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+A single device will act as the host device, which manages connections between all peers. This also displays the status and names of all players in lobby (disconnections, alive/dead, name, color, etc.)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+All other devices are players. Once the game begins, a portion will be assigned the role of impostor (also revealing to them the other impostors playing), or a crewmate.
 
-### `npm test`
+All players will be assigned tasks to complete, with tasks done by crewmates contributing to the task progress bar and win conditions.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To complete tasks, players will need to go around the building and scan the QR codes set up for each task and play the mini game to complete it.
 
-### `npm run build`
+Report deaths by noticing a dead player and saying that they are dead. (May need double confirmation if they have not been logged dead by the player who has died, or the impostor who killed them.)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Author
+Created by Emily Kiddle
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Contact: ekkiddle@gmail.com
