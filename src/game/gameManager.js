@@ -1,7 +1,19 @@
 // Game manager file to keep track of game components
 import { sendToAll, sendToPeer } from "../peer/peerManager";
 
+
 const players = new Map(); // key: playerId, value: { id, name, role, alive, tasks }
+
+// -------------------------------------------------------------
+// Link to playstate
+
+let updatePlayersState = null;
+
+export const registerPlayerSetter = (setter) => {
+  updatePlayersState = setter;
+};
+
+// -------------------------------------------------------------
 
 const splitData = (data) => {
   const delimiterIndex = data.indexOf("|");
@@ -52,10 +64,17 @@ export const handleClientMessages = (hostId, data) => {
 };
 
 
+// --------------------------------------------------------------------------------------
+// Interact with players
+// --------------------------------------------------------------------------------------
+
 const broadcastPlayers = () => {
-  const send = `players|${JSON.stringify((Object.fromEntries(players)))}`
+  const playersObj = Object.fromEntries(players);
+  const send = `players|${JSON.stringify(playersObj)}`;
   sendToAll(send);
-}
+  if (updatePlayersState) updatePlayersState(playersObj);
+};
+
 
 const addPlayer = (id, name) => {
   // initial color of black

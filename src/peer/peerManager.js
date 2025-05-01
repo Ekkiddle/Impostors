@@ -9,7 +9,7 @@ const generateId = () => {
     return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 };
 
-export const initPeer = (onConnection, onRecieve, onReady, onError) => {
+export const initPeer = (id, onConnection, onRecieve, onReady, onError) => {
   return new Promise((resolve, reject) => {
     if (peer) {
       console.log("Peer already established");
@@ -18,7 +18,12 @@ export const initPeer = (onConnection, onRecieve, onReady, onError) => {
     const tryInit = (attempts = 0) => {
         let storedId;
         if (attempts === 0) {
+          if (id) {
+            storedId = id;
+          } else {
+            // Have some variable for myId that I can set and use to reinitialize myself and reconnect with peers.
             storedId = localStorage.getItem('peer-id') || generateId(); // generateId returns a 6-digit
+          }
         } else {
             storedId = generateId();
         }
