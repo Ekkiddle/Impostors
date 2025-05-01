@@ -9,11 +9,17 @@ export default function PlayerList() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="flex flex-col gap-4 text-white w-full items-center justify-center">
       {Object.values(players).map((player) => (
-        <div key={player.id} className="border p-2 rounded shadow">
+        <div key={player.id} className="flex flex-row border gap-4 p-2 rounded shadow w-full max-w-xl items-center">
           <h3 className="text-lg font-bold">{player.name}</h3>
-          <p>Color: <span style={{ color: player.color }}>{player.color}</span></p>
+          <p className="flex items-center gap-2">
+            Color:
+            <div
+                className="w-4 h-4 rounded-sm border border-gray-300"
+                style={{ backgroundColor: player.color }}
+            />
+          </p>
           <p>Status: {player.alive ? 'Alive' : 'Dead'}</p>
           <p>Role: {player.role}</p>
         </div>

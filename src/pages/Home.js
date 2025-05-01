@@ -5,7 +5,7 @@ import { handleClientMessages, handleHostMessages } from '../game/gameManager';
 import PlayerList from '../components/PlayerList';
 import SpaceBackground from '../components/SpaceBackground';
 
-export default function LobbySetup() {
+export default function Home() {
   const {
     myId, setMyId,
     hostId, setHostId,
@@ -82,14 +82,18 @@ export default function LobbySetup() {
   function HostScreen() {
     // Function to show playerlist and whatnot...
     return (  
-      <div>
-        <div className="mt-4">
-          <p className="text-green-600">Hosting with Peer ID:</p>
-          <code>{myId}</code>
+      <div
+        className='w-full h-full flex flex-col items-center justify-between p-10'
+      >
+        <div className='w-full flex flex-col items-center'>
+          <div className="w-full mt-4 items-center flex flex-col">
+            <p className="text-green-600 text-xl">GameCode:</p>
+            <code className='text-white'>{myId}</code>
+          </div>
+          <PlayerList />
         </div>
-        <PlayerList />
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-black border-2 border-stone-400 text-white px-4 py-2 rounded-lg w-full max-w-64 hover:bg-stone-950 hover:border-white"
           onClick={handleGameStart}
         >
           Start Game
@@ -100,47 +104,55 @@ export default function LobbySetup() {
   
 
   return (
-    <div className="w-screen h-screen overflow-hidden">
+    <div className="w-screen h-screen overflow-hidden font-orbitron">
       <SpaceBackground />
       
       {!hosting && !joining && (
         <HostJoinButtons />
       )}
       {joining && (
-        <div className='flex flex-col justify-center items-center'>
-        <div className='gap-4'>
-          <label>Game ID: </label>
-          <input
-            type="text"
-            id="hostId"
-            name="hostId"
-            value={hostId}
-            onChange={(e) => setHostId(e.target.value)}
-            required
-            minLength="6"
-            maxLength="6"
-            size="10" 
-            className="border-2 rounded-md"/>
+        <div className='w-full h-full flex flex-col justify-center items-center gap-y-4 p-10'>
+          <div className="flex flex-col items-end gap-y-2">
+            {/* Game ID Field */}
+            <div className="flex flex-row items-center gap-x-2">
+              <label className="text-white" htmlFor="hostId">Game Code:</label>
+              <input
+                type="text"
+                id="hostId"
+                name="hostId"
+                value={hostId}
+                onChange={(e) => setHostId(e.target.value)}
+                required
+                minLength="6"
+                maxLength="6"
+                size="10"
+                className="border-2 rounded-md text-white bg-black px-2"
+              />
+            </div>
+
+            {/* Username Field */}
+            <div className="flex flex-row items-center gap-x-2">
+              <label className="text-white" htmlFor="name">Username:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                maxLength="15"
+                size="10"
+                className="border-2 rounded-md text-white bg-black px-2"
+              />
+            </div>
+          </div>
+          <button
+            className="bg-black border-2 border-stone-400 text-white px-4 py-2 rounded-lg w-full max-w-64 hover:bg-stone-950 hover:border-white"
+            onClick={handleClientClick}
+          >
+            Join Game
+          </button>
         </div>
-        <div>
-          <label>Username: </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            size="10" 
-            className="border-2 rounded-md"/>
-        </div>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded w-64"
-          onClick={handleClientClick}
-        >
-          Join Game
-        </button>
-      </div>
       )}
       {myId && hosting && (
         <HostScreen />
