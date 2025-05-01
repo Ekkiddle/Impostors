@@ -7,15 +7,21 @@ export default function SpaceBackground() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const area = (width * height) / 10000; // Normalize area
-    const density = 1.5; // Dots per 10,000 px² — adjust to taste
+    const density = 1.5; // Dots per 10,000 px²
     const numDots = Math.floor(area * density);
 
-    const newDots = Array.from({ length: numDots }, () => ({
-      size: Math.random() * 2 + 3, // 3-5px
-      top: Math.random() * 100, // %
-      left: Math.random() * 100, // %
-      speed: Math.random() * 30 + 10, // seconds (larger = slower)
-    }));
+    const newDots = Array.from({ length: numDots }, () => {
+      const speed = Math.random() * 30 + 10; // 10–40s
+      const animationDelay = -Math.random() * speed; // negative = mid-animation
+
+      return {
+        size: Math.random() * 2 + 3, // 3–5px
+        top: Math.random() * 100, // %
+        left: Math.random() * 100, // %
+        speed,
+        animationDelay,
+      };
+    });
 
     setDots(newDots);
   }, []);
@@ -29,11 +35,11 @@ export default function SpaceBackground() {
     borderRadius: "50%",
     backgroundColor: "white",
     animation: `moveRight ${dot.speed}s linear infinite`,
+    animationDelay: `${dot.animationDelay}s`,
   });
 
   return (
     <div className="absolute top-0 left-0 w-full h-screen -z-10 overflow-hidden bg-black">
-
       {dots.map((dot, index) => (
         <div key={index} style={createDotStyle(dot)} />
       ))}

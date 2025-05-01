@@ -31,7 +31,6 @@ const splitData = (data) => {
 export const handleHostMessages = (clientId, data) => {
     // function to handle messages sent to the host
     let {command, message} = splitData(data);
-    console.log(`Recieved "${message}" as a ${command} from ${clientId}`);
 
     if (command === 'name'){
       if (!players.has(clientId)) {
@@ -61,6 +60,13 @@ export const handleHostMessages = (clientId, data) => {
 
 export const handleClientMessages = (hostId, data) => {
     // function to handle messages sent to the client from the host
+    let {command, message} = splitData(data);
+
+    if (command === 'players'){
+      //set list of players
+      const playersObj = JSON.parse(message);
+      if (updatePlayersState) updatePlayersState(playersObj);
+    }
 };
 
 
@@ -76,11 +82,52 @@ const broadcastPlayers = () => {
 };
 
 
+const getRandomBrightColor = () => {
+  // Keep brightness above 0x17 for each channel (to avoid dark colors)
+  const min = 0x17;
+  const max = 0xFF;
+
+  const r = Math.floor(Math.random() * (max - min) + min);
+  const g = Math.floor(Math.random() * (max - min) + min);
+  const b = Math.floor(Math.random() * (max - min) + min);
+
+  return `#${[r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
+};
+
+const isColorTaken = (color) => {
+  for (const player of players.values()) {
+    if (player.color === color) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const generateUniqueColor = () => {
+  let color;
+  let attempts = 0;
+  do {
+    color = getRandomBrightColor();
+    attempts++;
+    if (attempts > 100) throw new Error("Unable to generate unique color");
+  } while (isColorTaken(color));
+  return color;
+};
+
 const addPlayer = (id, name) => {
-  // initial color of black
-  players.set(id, { id, name, color:'0x000000', connection:'active', alive: true, role: 'pending', tasks: [] });
+  const color = generateUniqueColor();
+  players.set(id, {
+    id,
+    name,
+    color,
+    connection: 'active',
+    alive: true,
+    role: 'pending',
+    tasks: []
+  });
   broadcastPlayers();
 };
+
 
 const changeName = (id, name) => {
   const existingPlayer = players.get(id);
