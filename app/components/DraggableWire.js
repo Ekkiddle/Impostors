@@ -24,6 +24,8 @@ export default function DraggableWire({
     if (!isDragging) return;
 
     const handleMove = (e) => {
+      e.preventDefault(); // Prevent scrolling while dragging
+
       const x = e.clientX || e.touches[0].clientX; // Handle both mouse and touch
       const y = e.clientY || e.touches[0].clientY; // Handle both mouse and touch
       setCurrent({ x, y });
