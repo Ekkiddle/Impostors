@@ -1,6 +1,6 @@
 import React from "react";
 
-function darkenColor(hex, amount = 0.3) {
+export function darkenColor(hex, amount = 0.3) {
     // Remove '#' if present
     hex = hex.replace(/^#/, '');
   
