@@ -43,6 +43,7 @@ export default function WireTask() {
 
   const startWires = [
     <DraggableWire 
+        key='blue'
         color="#0000ff"
         targetRef={blueRef}
         onConnection={() => {setConnections(prev => [...prev, '#0000ff']) 
@@ -51,6 +52,7 @@ export default function WireTask() {
         onHover={() => setHoveringBlue(true)}
     />,
     <DraggableWire 
+        key='red'
         color="#ff0000"
         targetRef={redRef}
         onConnection={() => {setConnections(prev => [...prev, '#ff0000']);
@@ -59,6 +61,7 @@ export default function WireTask() {
         onHover={() => setHoveringRed(true)}
     />,
     <DraggableWire 
+        key='yellow'
         color="#ffeb04"
         targetRef={yellowRef}
         onConnection={() => {setConnections(prev => [...prev, '#ffeb04']); 
@@ -67,6 +70,7 @@ export default function WireTask() {
         onHover={() => setHoveringYellow(true)}
     />,
     <DraggableWire 
+        key='purple'
         color="#ff00ff"
         targetRef={purpleRef}
         onConnection={() => {setConnections(prev => [...prev, '#ff00ff']);
@@ -78,21 +82,25 @@ export default function WireTask() {
 
   const endWires = [
     <WireTarget
+        key='blue-target'
         color='#0000ff'
         ref={blueRef}
         isHovering={hoverBlue}
     />,
     <WireTarget
+        key='red-target'
         color='#ff0000'
         ref={redRef}
         isHovering={hoverRed}
     />,
     <WireTarget
+        key='yellow-target'
         color='#ffeb04'
         ref={yellowRef}
         isHovering={hoverYellow}
     />,
     <WireTarget
+        key='purple-target'
         color='#ff00ff'
         ref={purpleRef}
         isHovering={hoverpurple}
