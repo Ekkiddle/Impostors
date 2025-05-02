@@ -23,7 +23,7 @@ export default function DraggableWire({
   useEffect(() => {
     if (!isDragging) return;
 
-    const handleMouseMove = (e) => {
+    const handleMove = (e) => {
 
       const x = e.clientX;
       const y = e.clientY;
@@ -45,7 +45,7 @@ export default function DraggableWire({
       }
     };
 
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       setIsDragging(false);
       if (hover && current) {
         console.log("Connected")
@@ -55,11 +55,15 @@ export default function DraggableWire({
       setHovering(false);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchend', handleEnd);
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleEnd);
     };
   }, [isDragging, current, onConnection, hover, setHovering, targetRef, onHover]);
 
@@ -73,7 +77,7 @@ export default function DraggableWire({
     }
   }, []);
 
-  function handleMouseDown(e) {
+  function handleStart(e) {
     if (connected) return;
     e.preventDefault();
     const originRect = originRef.current?.getBoundingClientRect();
@@ -178,7 +182,8 @@ export default function DraggableWire({
       {/* Draggable origin block */}
       <div
         ref={originRef}
-        onMouseDown={handleMouseDown}
+        onMouseDown={handleStart}
+        onTouchStart={handleStart}      // Touch event for mobile
         className="absolute cursor-pointer z-6 border-2 border-black"
         style={{
           top: 0,
