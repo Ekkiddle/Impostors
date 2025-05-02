@@ -56,7 +56,7 @@ export default function DraggableWire({
       setHovering(false);
     };
 
-    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mousemove', handleMove, {passive: false});
     window.addEventListener('mouseup', handleEnd);
     window.addEventListener('touchmove', handleMove);
     window.addEventListener('touchend', handleEnd);
