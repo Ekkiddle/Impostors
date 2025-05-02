@@ -112,10 +112,10 @@ export const disconnectPeer = (peerId) => {
   sessionStorage.setItem('connections', connIds);
 }
 
-export const reconnect = async (onRecieve, onReady, onOpen, onError) => {
+export const reconnect = async (onRecieve, onReady, onOpen, onClose, onError) => {
   try {
     if (!peer) {
-      await initPeer(null, onRecieve, onReady, onError);
+      await initPeer(null, onRecieve, onReady, onClose, onError);
     } else {
       console.log("Peer already exists. Skipping init.");
     }
@@ -124,7 +124,7 @@ export const reconnect = async (onRecieve, onReady, onOpen, onError) => {
       const conns = sessionStorage.getItem('connections') || [];
       console.log("Reconnecting to connections", conns)
       for (const connId in conns){
-        await connectToPeer(connId, onRecieve, onOpen, onError);
+        await connectToPeer(connId, onRecieve, onOpen, onClose, onError);
         console.log(`Reconnected and connected to peer ${connId}`);
       }
     } else {

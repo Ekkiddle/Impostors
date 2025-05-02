@@ -120,14 +120,16 @@ const addPlayer = (id, name) => {
 };
 
 const changeName = (id, name) => {
-  const existingPlayer = players.get(id);
-  existingPlayer.name = name; // update the name
-  players.set(id, existingPlayer);
-  broadcastPlayers();
+  if (players.has(id)) {
+    const existingPlayer = players.get(id);
+    existingPlayer.name = name; // update the name
+    players.set(id, existingPlayer);
+    broadcastPlayers();
+  }
 }
 
 const changeColor = (id, color) => {
-  if (!isColorTaken(color)){
+  if (!isColorTaken(color) && (players.has(id))){
     const existingPlayer = players.get(id);
     existingPlayer.color = color; // update the name
     players.set(id, existingPlayer);
@@ -136,17 +138,21 @@ const changeColor = (id, color) => {
 }
 
 const changeAlive = (id, alive) => {
-  const existingPlayer = players.get(id);
-  existingPlayer.alive = alive; // update the name
-  players.set(id, existingPlayer);
-  broadcastPlayers();
+  if (players.has(id)) {
+    const existingPlayer = players.get(id);
+    existingPlayer.alive = alive; // update the name
+    players.set(id, existingPlayer);
+    broadcastPlayers();
+  }
 }
 
 export const changeConnection = (id, status) => {
-  const existingPlayer = players.get(id);
-  existingPlayer.connection = status; // update the name
-  players.set(id, existingPlayer);
-  broadcastPlayers();
+  if (players.has(id)) {
+    const existingPlayer = players.get(id);
+    existingPlayer.connection = status; // update the name
+    players.set(id, existingPlayer);
+    broadcastPlayers();
+  }
 }
 
 export const removePlayer = (id) => {
@@ -233,7 +239,7 @@ const generateUniqueColor = () => {
   return color;
 };
 
-const shuffleArray = (arr) => {
+export const shuffleArray = (arr) => {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1)); // Random index between 0 and i
     [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements

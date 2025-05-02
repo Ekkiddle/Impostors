@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { reconnect, getMyId } from "../peer/peerManager";
-import { assignRoles, handleHostMessages } from "../game/gameManager";
+import { assignRoles, changeConnection, handleHostMessages } from "../game/gameManager";
 
 import SpaceBackground from "../components/SpaceBackground";
 import PlayerList from "../components/PlayerList";
@@ -15,7 +15,7 @@ export default function HostScreen() {
   useEffect(() => {
     const init = async () => {
       console.log("Reconnecting");
-      await reconnect(handleHostMessages);
+      await reconnect(handleHostMessages, null, (id)=> changeConnection(id, true), (id) => changeConnection(id, false));
       setMyId(getMyId());
       setLoading(false);
     };
@@ -38,7 +38,7 @@ export default function HostScreen() {
             {loading ? <LoadingDots /> : <code className="text-white">{myId}</code>}
           </div>
 
-          <div className="w-full h-[60vh] overflow-y-scroll mt-4 flex flex-col items-start">
+          <div className="w-full h-[60vh] overflow-y-scroll mt-4 flex flex-col items-start scrollbar-hide">
             <PlayerList />
           </div>
         </div>

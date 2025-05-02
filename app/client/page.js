@@ -82,7 +82,7 @@ export default function Lobby() {
             <div className="w-full mt-4 items-center flex flex-col">
               <p className="text-green-600 text-xl">Players:</p>
             </div>
-            <div className="w-full max-h-[60vh] overflow-y-scroll mt-4">
+            <div className="w-full max-h-[60vh] overflow-y-scroll mt-4 scrollbar-hide">
               <PlayerList />
             </div>
           </div>
