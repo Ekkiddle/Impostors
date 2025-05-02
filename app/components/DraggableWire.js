@@ -11,7 +11,7 @@ export default function DraggableWire({
   size = 25,
   wireThickness = 20,
 }) {
-  const darkerColor = darkenColor(color)
+  const darkerColor = darkenColor(color);
 
   const originRef = useRef(null);
   const [hover, setHovering] = useState(false);
@@ -24,9 +24,8 @@ export default function DraggableWire({
     if (!isDragging) return;
 
     const handleMove = (e) => {
-
-      const x = e.clientX;
-      const y = e.clientY;
+      const x = e.clientX || e.touches[0].clientX; // Handle both mouse and touch
+      const y = e.clientY || e.touches[0].clientY; // Handle both mouse and touch
       setCurrent({ x, y });
 
       // Hover detection
@@ -34,11 +33,11 @@ export default function DraggableWire({
       if (targetRef?.current) {
         const targetRect = targetRef.current.getBoundingClientRect();
         const inside =
-          e.clientX >= targetRect.left-wireThickness*0.3 &&
-          e.clientX <= targetRect.right &&
-          e.clientY >= targetRect.top &&
-          e.clientY <= targetRect.bottom;
-        if (inside){
+          x >= targetRect.left - wireThickness * 0.3 &&
+          x <= targetRect.right &&
+          y >= targetRect.top &&
+          y <= targetRect.bottom;
+        if (inside) {
           if (onHover) onHover();
           setHovering(true);
         }
@@ -48,7 +47,7 @@ export default function DraggableWire({
     const handleEnd = () => {
       setIsDragging(false);
       if (hover && current) {
-        console.log("Connected")
+        console.log('Connected');
         setConnected(true);
         if (onConnection) onConnection(current);
       }
@@ -59,13 +58,14 @@ export default function DraggableWire({
     window.addEventListener('mouseup', handleEnd);
     window.addEventListener('touchmove', handleMove);
     window.addEventListener('touchend', handleEnd);
+
     return () => {
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('mouseup', handleEnd);
       window.removeEventListener('touchmove', handleMove);
       window.removeEventListener('touchend', handleEnd);
     };
-  }, [isDragging, current, onConnection, hover, setHovering, targetRef, onHover]);
+  }, [isDragging, current, onConnection, hover, targetRef, onHover]);
 
   useEffect(() => {
     const originRect = originRef.current?.getBoundingClientRect();
@@ -79,7 +79,8 @@ export default function DraggableWire({
 
   function handleStart(e) {
     if (connected) return;
-    e.preventDefault();
+    e.preventDefault(); // Prevent default behavior, especially for mobile (to avoid scrolling)
+
     const originRect = originRef.current?.getBoundingClientRect();
 
     if (originRect) {
@@ -89,8 +90,8 @@ export default function DraggableWire({
       });
 
       setCurrent({
-        x: e.clientX,
-        y: e.clientY,
+        x: e.clientX || e.touches[0].clientX, // Handle both mouse and touch
+        y: e.clientY || e.touches[0].clientY, // Handle both mouse and touch
       });
 
       setIsDragging(true);
@@ -98,22 +99,22 @@ export default function DraggableWire({
   }
 
   const renderWire = () => {
-    // SVG size and offset (tweak as needed)
-    const svgSize = wireThickness*1.5;
+    const svgSize = wireThickness * 1.5;
     const offset = 10;
 
     if (!(isDragging || connected)) return (
       <image
-          href="/wireend.svg" // Replace with your SVG path
-          width={svgSize}
-          height={svgSize}
-          x={origin.x - offset/2}
-          y={origin.y - svgSize / 2}
-        />
+        href="/wireend.svg" // Replace with your SVG path
+        width={svgSize}
+        height={svgSize}
+        x={origin.x - offset / 2}
+        y={origin.y - svgSize / 2}
+      />
     );
+
     const end = connected ? current : current;
     if (!end) return null;
-  
+
     const dx = end.x - origin.x;
     const dy = end.y - origin.y;
     const length = Math.sqrt(dx * dx + dy * dy);
@@ -144,15 +145,13 @@ export default function DraggableWire({
         />
 
         <rect
-          x={origin.x-2}
-          y={origin.y - wireThickness *0.25}
+          x={origin.x - 2}
+          y={origin.y - wireThickness * 0.25}
           width={length + 2}
-          height={wireThickness*0.5}
+          height={wireThickness * 0.5}
           fill={color}
           transform={`rotate(${degrees}, ${origin.x}, ${origin.y})`}
         />
-
-        
 
         {/* SVG icon at the end */}
         <image
@@ -165,9 +164,7 @@ export default function DraggableWire({
         />
       </>
     );
-
   };
-  
 
   return (
     <div
@@ -183,7 +180,7 @@ export default function DraggableWire({
       <div
         ref={originRef}
         onMouseDown={handleStart}
-        onTouchStart={handleStart}      // Touch event for mobile
+        onTouchStart={handleStart} // Touch event for mobile
         className="absolute cursor-pointer z-6 border-2 border-black"
         style={{
           top: 0,
@@ -196,26 +193,25 @@ export default function DraggableWire({
       <div
         className="absolute z-7"
         style={{
-          top: 1,        
+          top: 1,
           left: -3,
-          width: size+3,
-          height: size -2,      
+          width: size + 3,
+          height: size - 2,
           backgroundColor: darkerColor,
-          pointerEvents: 'none', 
+          pointerEvents: 'none',
         }}
       />
       <div
         className="absolute z-7"
         style={{
-          top: size / 4,         // push it down by 1/4 of the original height
+          top: size / 4, // push it down by 1/4 of the original height
           left: -3,
-          width: size +3,
-          height: size / 2,      // half the height
+          width: size + 3,
+          height: size / 2, // half the height
           backgroundColor: color,
           pointerEvents: 'none', // so it doesn't block mouse events
         }}
       />
-      
     </div>
   );
 }
