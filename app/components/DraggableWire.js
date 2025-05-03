@@ -9,7 +9,6 @@ export default function DraggableWire({
   onHover,
   targetRef,
   size = 25,
-  wireThickness = 20,
 }) {
   const darkerColor = darkenColor(color);
 
@@ -35,10 +34,10 @@ export default function DraggableWire({
       if (targetRef?.current) {
         const targetRect = targetRef.current.getBoundingClientRect();
         const inside =
-          x >= targetRect.left - wireThickness * 0.3 &&
-          x <= targetRect.right &&
-          y >= targetRect.top &&
-          y <= targetRect.bottom;
+          x >= targetRect.left - size &&
+          x <= targetRect.right + 10 &&
+          y >= targetRect.top - 10 &&
+          y <= targetRect.bottom + 10;
         if (inside) {
           if (onHover) onHover();
           setHovering(true);
@@ -48,7 +47,7 @@ export default function DraggableWire({
 
     const handleEnd = () => {
       setIsDragging(false);
-      if (hover && current) {
+      if (hover) {
         console.log('Connected');
         setConnected(true);
         if (onConnection) onConnection(current);
@@ -58,7 +57,7 @@ export default function DraggableWire({
 
     window.addEventListener('mousemove', handleMove, {passive: false});
     window.addEventListener('mouseup', handleEnd);
-    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchmove', handleMove, {passive: false});
     window.addEventListener('touchend', handleEnd);
 
     return () => {
@@ -78,10 +77,10 @@ export default function DraggableWire({
       });
     }
   }, []);
+  
 
   function handleStart(e) {
     if (connected) return;
-    e.preventDefault(); // Prevent default behavior, especially for mobile (to avoid scrolling)
 
     const originRect = originRef.current?.getBoundingClientRect();
 
@@ -101,9 +100,9 @@ export default function DraggableWire({
   }
 
   const renderWire = () => {
-    const svgSize = wireThickness * 1.5;
+    const svgSize = size * 1.5;
     const offset = 10;
-
+  
     if (!(isDragging || connected)) return (
       <image
         href="/wireend.svg" // Replace with your SVG path
@@ -113,48 +112,58 @@ export default function DraggableWire({
         y={origin.y - svgSize / 2}
       />
     );
-
-    const end = connected ? current : current;
+  
+    let end;
+    if (connected && targetRef?.current) {
+      const targetRect = targetRef.current.getBoundingClientRect();
+      end = {
+        x: targetRect.left - size/2,
+        y: targetRect.top + targetRect.height / 2,
+      };
+    } else {
+      end = current;
+    }
     if (!end) return null;
-
+  
     const dx = end.x - origin.x;
     const dy = end.y - origin.y;
     const length = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx);
     const degrees = (angle * 180) / Math.PI;
+  
+    // Calculate the 4 corner points of the polygon (the wire)
 
+    const calculatePoints = (width, offset) => {
+        // Calculate the 4 corners of the wire
+      const halfThickness = width / 2;
+      const p1 = { x: origin.x + size/2 +offset, y: origin.y + halfThickness}; // Top-left
+      const p2 = { x: origin.x + size/2 +offset, y: origin.y - halfThickness}; // Top-right
+      const p3 = { x: end.x + halfThickness * Math.sin(angle), y: end.y - halfThickness * Math.cos(angle) }; // Bottom-right
+      const p4 = { x: end.x - halfThickness * Math.sin(angle), y: end.y + halfThickness * Math.cos(angle) }; // Bottom-left
+      return `${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y} ${p4.x},${p4.y}`
+    } 
+  
     return (
       <>
-        {/* Wire */}
-        <rect
-          x={origin.x}
-          y={origin.y - wireThickness / 2}
-          width={length}
-          height={wireThickness}
+        {/* Wire Polygon */}
+        <polygon
+          points={calculatePoints(size, 0)}
           fill={darkerColor}
           stroke="black"
           strokeWidth="2"
-          transform={`rotate(${degrees}, ${origin.x}, ${origin.y})`}
         />
+  
         {/* Cover the left edge to "remove" border */}
-        <rect
-          x={origin.x - 1} // Extend slightly to fully cover stroke
-          y={origin.y - wireThickness / 2}
-          width={5}
-          height={wireThickness}
-          fill={darkerColor} // same color as wire to blend
-          transform={`rotate(${degrees}, ${origin.x}, ${origin.y})`}
+        <polygon
+          points={calculatePoints(size -2, -1)}
+          fill={darkerColor}
         />
-
-        <rect
-          x={origin.x - 2}
-          y={origin.y - wireThickness * 0.25}
-          width={length + 2}
-          height={wireThickness * 0.5}
+  
+        <polygon
+          points={calculatePoints(size*0.5, -1)}
           fill={color}
-          transform={`rotate(${degrees}, ${origin.x}, ${origin.y})`}
         />
-
+  
         {/* SVG icon at the end */}
         <image
           href="/wireend.svg" // Replace with your SVG path
@@ -167,6 +176,7 @@ export default function DraggableWire({
       </>
     );
   };
+  
 
   return (
     <div
@@ -177,6 +187,18 @@ export default function DraggableWire({
       <svg className="fixed inset-0 pointer-events-none overflow-visible z-20">
         {renderWire()}
       </svg>
+
+      <div
+        onMouseDown={handleStart}
+        onTouchStart={handleStart} // Touch event for mobile
+        className="absolute cursor-pointer z-6"
+        style={{
+          top: -5,
+          left: -5,
+          width: size+10,
+          height: size+10,
+        }}
+      />
 
       {/* Draggable origin block */}
       <div

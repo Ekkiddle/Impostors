@@ -8,7 +8,7 @@ import WireTarget from './WireTarget';
 import { darkenColor } from './SpaceManIcon';
 
 
-export default function WireTask() {
+export default function WireTask({onSuccess}) {
   const [connections, setConnections] = useState([]);
   const [hoverBlue, setHoveringBlue] = useState(false);
   const [hoverRed, setHoveringRed] = useState(false);
@@ -23,6 +23,8 @@ export default function WireTask() {
   const yellowRef = useRef(null);
   const purpleRef = useRef(null);
 
+  const size = 20;
+
   const isConnected = (color) => {
     const arr = Array.isArray(connections)
     const con = connections.includes(color)
@@ -32,6 +34,7 @@ export default function WireTask() {
   const checkSuccess = useCallback(() => {
     if (connections.length === 4) {
       console.log("Success");
+      if (onSuccess) onSuccess();
     }
   }, [connections]);
 
@@ -44,6 +47,7 @@ export default function WireTask() {
   const startWires = [
     <DraggableWire 
         key='blue'
+        size={size}
         color="#0000ff"
         targetRef={blueRef}
         onConnection={() => {setConnections(prev => [...prev, '#0000ff']) 
@@ -53,6 +57,7 @@ export default function WireTask() {
     />,
     <DraggableWire 
         key='red'
+        size={size}
         color="#ff0000"
         targetRef={redRef}
         onConnection={() => {setConnections(prev => [...prev, '#ff0000']);
@@ -62,6 +67,7 @@ export default function WireTask() {
     />,
     <DraggableWire 
         key='yellow'
+        size={size}
         color="#ffeb04"
         targetRef={yellowRef}
         onConnection={() => {setConnections(prev => [...prev, '#ffeb04']); 
@@ -71,6 +77,7 @@ export default function WireTask() {
     />,
     <DraggableWire 
         key='purple'
+        size={size}
         color="#ff00ff"
         targetRef={purpleRef}
         onConnection={() => {setConnections(prev => [...prev, '#ff00ff']);
@@ -83,24 +90,28 @@ export default function WireTask() {
   const endWires = [
     <WireTarget
         key='blue-target'
+        size={size}
         color='#0000ff'
         ref={blueRef}
         isHovering={hoverBlue}
     />,
     <WireTarget
         key='red-target'
+        size={size}
         color='#ff0000'
         ref={redRef}
         isHovering={hoverRed}
     />,
     <WireTarget
         key='yellow-target'
+        size={size}
         color='#ffeb04'
         ref={yellowRef}
         isHovering={hoverYellow}
     />,
     <WireTarget
         key='purple-target'
+        size={size}
         color='#ff00ff'
         ref={purpleRef}
         isHovering={hoverpurple}
@@ -114,7 +125,7 @@ export default function WireTask() {
 
 
   return (
-    <div className="flex flex-col relative w-screen bg-black">
+    <div className="flex flex-col relative w-full h-full bg-black">
         <div
             className="absolute inset-0 z-0"
             style={{
@@ -126,19 +137,23 @@ export default function WireTask() {
         />
         {sources?.map((StartWire, index) => (
             <div className='flex flex-row justify-between w-full' key={index}>
-                <div className="flex flex-col">
+                <div className="flex flex-col h-full">
                     <div className='bg-gray-600 h-10 w-16 border-2 border-black z-5'></div>
                     <div className='bg-yellow-300 h-5 w-14 border-2 border-black z-5'></div>
-                    <div className='flex flex-row'>
-                        <div className='relative w-12 h-[25px] border-2 border-black z-5'
-                            style={{backgroundColor: StartWire.props.color}}
+                    <div className='flex flex-row w-full'
+                        style={{height: StartWire.props.size}}
+                    >
+                        <div className='relative w-12 border-2 border-black z-5'
+                            style={{backgroundColor: StartWire.props.color,
+                                height: StartWire.props.size
+                            }}
                         >
                             <div
                                 className="absolute w-full z-7"
                                 style={{
-                                top: 0,        
+                                top: '-4%',        
                                 left: 1,
-                                height: 25 -2,      
+                                height: '110%',      
                                 backgroundColor: darkenColor(StartWire.props.color),
                                 pointerEvents: 'none', 
                                 }}
@@ -146,32 +161,36 @@ export default function WireTask() {
                             <div
                                 className="absolute w-full z-7"
                                 style={{
-                                top: 25 / 4 -2,         // push it down by 1/4 of the original height
+                                top: '24%',        // push it down by 1/4 of the original height
                                 left: 1,
-                                height: 25 / 2,      // half the height
+                                height: '50%',      // half the height
                                 backgroundColor: StartWire.props.color,
                                 pointerEvents: 'none', // so it doesn't block mouse events
                                 }}
                             />
                         </div>
-                            {StartWire}
+                        {StartWire}
                     </div>
                 </div>
-                <div className='flex flex-col items-end'>
+                <div className='flex flex-col items-end h-full'>
                     <div className='bg-gray-600 h-10 w-16 border-2 border-black z-5'></div>
                     <div className={`h-5 w-14 border-2 border-black z-5 ${isConnected(ends[index].props.color) ? 'bg-yellow-300' : 'bg-gray-800'} `}>
                     </div>
-                    <div className='flex flex-row'>
+                    <div className='flex flex-row w-full bg-black'
+                        style={{height: ends[index].props.size}}
+                    >
                         {ends[index]}
-                        <div className='relative w-12 h-[25px] border-2 border-black z-5'
-                            style={{backgroundColor: ends[index].props.color}}
+                        <div className='relative w-12 border-2 border-black z-5'
+                            style={{backgroundColor: ends[index].props.color,
+                                size: ends[index].props.size
+                            }}
                         >
                             <div
                                 className="absolute w-full z-7"
                                 style={{
-                                top: 0,        
+                                top: '-4%',        
                                 left: 1,
-                                height: 25 -2,      
+                                height: '110%',      
                                 backgroundColor: darkenColor(ends[index].props.color),
                                 pointerEvents: 'none', 
                                 }}
@@ -179,9 +198,9 @@ export default function WireTask() {
                             <div
                                 className="absolute w-full z-7"
                                 style={{
-                                top: 25 / 4 -2,         // push it down by 1/4 of the original height
+                                top: '23%',         // push it down by 1/4 of the original height
                                 left: 1,
-                                height: 25 / 2,      // half the height
+                                height: '55%',      // half the height
                                 backgroundColor: ends[index].props.color,
                                 pointerEvents: 'none', // so it doesn't block mouse events
                                 }}
@@ -191,9 +210,9 @@ export default function WireTask() {
                 </div>
             </div>
         ))}
-        <div className='flex flex-row justify-between w-full z-5 text-white'>
-            <div className='bg-gray-600 h-10 w-16 border-2 border-black'></div>
-            <div className='bg-gray-600 h-10 w-16 border-2 border-black'></div>
+        <div className='flex flex-row h-full justify-between w-full z-5 text-white'>
+            <div className='bg-gray-600 w-16 border-2 border-black'></div>
+            <div className='bg-gray-600 w-16 border-2 border-black'></div>
         </div>
     </div>
   );

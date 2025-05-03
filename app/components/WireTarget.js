@@ -11,6 +11,7 @@ export default function WireTarget({
   hoverColor = 'gray',
 }) {
     const darkerColor = darkenColor(color);
+    
 
   return (
     <div
@@ -24,8 +25,8 @@ export default function WireTarget({
             style={{
             top: 0,
             left: 0,
-            width: size,
-            height: size,
+            width: '100%',
+            height: '97%',
             backgroundColor: isHovering ? hoverColor : darkerColor,
             }}
         />
@@ -34,8 +35,8 @@ export default function WireTarget({
             style={{
             top: 1,        
             left: 0,
-            width: size + 3,
-            height: size -2,      
+            width: '110%',
+            height: '90%',      
             backgroundColor: darkerColor,
             }}
         />
@@ -44,8 +45,8 @@ export default function WireTarget({
             style={{
             top: size / 4,         // push it down by 1/4 of the original height
             left: 0,
-            width: size + 3,
-            height: size / 2,      // half the height
+            width: '110%',
+            height: '50%',      // half the height
             backgroundColor: color,
             pointerEvents: 'none', // so it doesn't block mouse events
             }}
@@ -55,10 +56,10 @@ export default function WireTarget({
         <svg
             className="absolute z-8 pointer-events-none"
             style={{
-            top: size / 2 - (size * 1.2) / 2, // center vertically
-            left: -size * 0.3, // move slightly outside the box to the left
-            width: size * 1.2,
-            height: size * 1.2,
+            top: '-5%', // center vertically
+            left: '-50%', // move slightly outside the box to the left
+            width: '130%',
+            height: '130%',
             }}
         >
             <image
