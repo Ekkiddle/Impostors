@@ -1,7 +1,9 @@
 @import "tailwindcss";
 /* Import Orbitron font */
-@import "@fontsource/orbitron";  /* You can add specific weights here if necessary */
 
+@theme inline {
+  --font-orbitron: var(--font-orbitron);
+}
 
 :root {
   --background: #ffffff;
@@ -11,7 +13,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .orbitron {

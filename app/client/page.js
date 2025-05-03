@@ -75,7 +75,7 @@ export default function Lobby() {
     );
   } else {
     return (
-      <div className="w-screen h-screen overflow-hidden font-orbitron">
+      <div className="w-screen h-screen overflow-hidden">
         <SpaceBackground />
         <div className='w-full h-full flex flex-col items-center justify-between p-10'>
           <div className='w-full flex flex-col items-center'>

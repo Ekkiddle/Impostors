@@ -8,6 +8,18 @@ import { registerPlayerSetter } from './game/gameManager';
 import { useEffect } from 'react';
 import FullscreenButton from './components/FullScreenButton';
 
+
+// Fonts  -------------------------------------------------------------------
+import { Orbitron } from 'next/font/google';
+
+const orbitron = Orbitron({
+  subsets: ['latin'],
+  weight: ['400', '700'], // choose the weights you need
+  variable: '--font-orbitron', // optional: useful for Tailwind
+});
+
+// ----------------------------------------------------------------------------
+
 function RegisterGameManager() {
   const { setPlayers } = useGame();
 
@@ -18,10 +30,25 @@ function RegisterGameManager() {
   return null;
 }
 
+// Function to lock the screen orientation
+const lockOrientation = () => {
+  if (screen.orientation && screen.orientation.lock) {
+    // Lock the orientation to portrait
+    screen.orientation.lock('portrait').catch(function (error) {
+      console.log('Error locking orientation: ', error);
+    });
+  }
+};
+
 export default function RootLayout({ children }) {
+  useEffect(() => {
+    // Lock the orientation when the layout is loaded
+    lockOrientation();
+  }, []); // Empty array ensures this effect runs only once (on mount)
+
   return (
-    <html lang="en">
-      <body className='w-screen h-screen overflow-hidden relative'>
+    <html lang="en" className={`${orbitron.variable}`}>
+      <body className={`w-screen h-screen overflow-hidden relative`}>
         <FullscreenButton 
           style={{
             position: 'absolute',

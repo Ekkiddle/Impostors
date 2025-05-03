@@ -138,12 +138,12 @@ export default function WireTask({onSuccess}) {
         {sources?.map((StartWire, index) => (
             <div className='flex flex-row justify-between w-full' key={index}>
                 <div className="flex flex-col h-full">
-                    <div className='bg-gray-600 h-10 w-16 border-2 border-black z-5'></div>
-                    <div className='bg-yellow-300 h-5 w-14 border-2 border-black z-5'></div>
+                    <div className='bg-gray-600 h-10 w-16 max-w-[15vw] border-2 border-black z-5'></div>
+                    <div className='bg-yellow-300 h-5 w-14 max-w-[13vw] border-2 border-black z-5'></div>
                     <div className='flex flex-row w-full'
                         style={{height: StartWire.props.size}}
                     >
-                        <div className='relative w-12 border-2 border-black z-5'
+                        <div className='relative w-12 max-w-[11vw] border-2 border-black z-5'
                             style={{backgroundColor: StartWire.props.color,
                                 height: StartWire.props.size
                             }}
@@ -173,14 +173,14 @@ export default function WireTask({onSuccess}) {
                     </div>
                 </div>
                 <div className='flex flex-col items-end h-full'>
-                    <div className='bg-gray-600 h-10 w-16 border-2 border-black z-5'></div>
-                    <div className={`h-5 w-14 border-2 border-black z-5 ${isConnected(ends[index].props.color) ? 'bg-yellow-300' : 'bg-gray-800'} `}>
+                    <div className='bg-gray-600 h-10 w-16 max-w-[15vw] border-2 border-black z-5'></div>
+                    <div className={`h-5 w-14 max-w-[13vw] border-2 border-black z-5 ${isConnected(ends[index].props.color) ? 'bg-yellow-300' : 'bg-gray-800'} `}>
                     </div>
                     <div className='flex flex-row w-full bg-black'
                         style={{height: ends[index].props.size}}
                     >
                         {ends[index]}
-                        <div className='relative w-12 border-2 border-black z-5'
+                        <div className='relative w-12 max-w-[11vw] border-2 border-black z-5'
                             style={{backgroundColor: ends[index].props.color,
                                 size: ends[index].props.size
                             }}
@@ -211,8 +211,8 @@ export default function WireTask({onSuccess}) {
             </div>
         ))}
         <div className='flex flex-row h-full justify-between w-full z-5 text-white'>
-            <div className='bg-gray-600 w-16 border-2 border-black'></div>
-            <div className='bg-gray-600 w-16 border-2 border-black'></div>
+            <div className='bg-gray-600 w-16 max-w-[15vw] border-2 border-black'></div>
+            <div className='bg-gray-600 w-16 max-w-[15vw] border-2 border-black'></div>
         </div>
     </div>
   );

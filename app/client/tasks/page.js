@@ -8,15 +8,15 @@ export default function TaskPage(){
     const [task, setTask] = useState(<WireTask />);
 
     return (
-    <>
+    <div className="flex flex-col items-center h-full w-full">
         <div className="flex flex-row gap-2">
             <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<WireTask />)}>Wire Task</button>
             <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<CardTask />)}>Card Task</button>
         </div>
-        <div className="w-screen h-[60vh]">
+        <div className="max-w-full h-100 w-100">
             {task}
         </div>
-    </>
+    </div>
     );
 
 }

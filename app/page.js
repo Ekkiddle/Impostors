@@ -11,7 +11,7 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="w-screen h-screen overflow-hidden font-orbitron">
+    <div className={`w-screen h-screen overflow-hidden font-orbitron`}>
       <SpaceBackground />
       <div className="p-10 flex flex-col gap-4 w-full h-full justify-center items-center align-center">
         <h1 className="text-white text-5xl">Impostors</h1>
