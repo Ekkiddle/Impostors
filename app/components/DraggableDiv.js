@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 
 export default function DraggableContainer({
   id,
-  ref = useRef(null),
+  ref,
   defaultPosition = { x: 0, y: 0 },
   width = 100,
   height = 100,
