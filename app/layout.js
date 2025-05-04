@@ -11,6 +11,13 @@ import FullscreenButton from './components/FullScreenButton';
 
 // Fonts  -------------------------------------------------------------------
 import { Orbitron } from 'next/font/google';
+import localFont from 'next/font/local'
+
+const digi = localFont({ 
+  src: './fonts/time.ttf', 
+  variable: '--font-digi',
+  display: 'swap', // optional: improves performance
+})
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -47,7 +54,7 @@ export default function RootLayout({ children }) {
   }, []); // Empty array ensures this effect runs only once (on mount)
 
   return (
-    <html lang="en" className={`${orbitron.variable}`}>
+    <html lang="en" className={`${orbitron.variable} ${digi.variable}`}>
       <body className={`w-screen h-screen overflow-hidden relative`}>
         <FullscreenButton 
           style={{

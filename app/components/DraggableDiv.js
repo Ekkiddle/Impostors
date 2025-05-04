@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 
 export default function DraggableContainer({
   id,
+  ref = useRef(null),
   defaultPosition = { x: 0, y: 0 },
   width = 100,
   height = 100,
@@ -12,7 +13,6 @@ export default function DraggableContainer({
   children,
   style = {},
 }) {
-  const containerRef = useRef(null);
   const [position, setPosition] = useState(defaultPosition);
   const offset = useRef({ x: 0, y: 0 });
   const dragging = useRef(false);
@@ -22,42 +22,99 @@ export default function DraggableContainer({
 
   useEffect(() => {
     // Update parent rect on load
-    if (containerRef.current?.offsetParent) {
-      containerParentRect.current = containerRef.current.offsetParent.getBoundingClientRect();
+    if (ref.current?.offsetParent) {
+      containerParentRect.current = ref.current.offsetParent.getBoundingClientRect();
     }
 
     const handleMove = (e) => {
-      if (!dragging.current) return;
-      e.preventDefault();
-
-      const point = getTouchOrMouse(e);
-
-      const newX = point.clientX - containerParentRect.current.left - offset.current.x;
-      const newY = point.clientY - containerParentRect.current.top - offset.current.y;
-
-      const newRect = {
-        left: newX,
-        top: newY,
-        right: newX + width,
-        bottom: newY + height,
-      };
-
-      const overlaps = forbiddenZones.some((zone) => {
-        return !(
-          newRect.right < zone.left ||
-          newRect.left > zone.right ||
-          newRect.bottom < zone.top ||
-          newRect.top > zone.bottom
-        );
-      });
-
-    // Allow me to pass in a function that works and can use the coordinates of my object.
-      if (onDrag) onDrag(newRect);
-
-      if (!overlaps) {
+        if (!dragging.current) return;
+        e.preventDefault();
+      
+        const point = getTouchOrMouse(e);
+      
+        const containerWidth = ref.current.getBoundingClientRect().width;
+        const containerHeight = ref.current.getBoundingClientRect().height;
+      
+        const parentWidth = containerParentRect.current.width;
+        const parentHeight = containerParentRect.current.height;
+      
+        let newX = point.clientX - containerParentRect.current.left - offset.current.x;
+        let newY = point.clientY - containerParentRect.current.top - offset.current.y;
+      
+        const newRect = {
+          left: newX,
+          top: newY,
+          right: newX + containerWidth,
+          bottom: newY + containerHeight,
+        };
+      
+        for (let zoneRef of forbiddenZones) {
+          const zone = zoneRef?.current?.getBoundingClientRect?.();
+          if (!zone) continue;
+      
+          const zoneLeft = zone.left - containerParentRect.current.left;
+          const zoneTop = zone.top - containerParentRect.current.top;
+          const zoneRight = zoneLeft + zone.width;
+          const zoneBottom = zoneTop + zone.height;
+      
+          const overlaps =
+            !(newRect.right <= zoneLeft ||
+              newRect.left >= zoneRight ||
+              newRect.bottom <= zoneTop ||
+              newRect.top >= zoneBottom);
+      
+          if (!overlaps) continue;
+      
+          const options = [
+            {
+              x: zoneLeft - containerWidth,
+              y: newY,
+              dist: Math.abs((zoneLeft - containerWidth) - newX),
+            },
+            {
+              x: zoneRight,
+              y: newY,
+              dist: Math.abs(zoneRight - newX),
+            },
+            {
+              x: newX,
+              y: zoneTop - containerHeight,
+              dist: Math.abs((zoneTop - containerHeight) - newY),
+            },
+            {
+              x: newX,
+              y: zoneBottom,
+              dist: Math.abs(zoneBottom - newY),
+            },
+          ];
+      
+          // Filter out any options that would go outside the parent container
+          const inBounds = options.filter(opt => {
+            const xInBounds = opt.x >= 0 && opt.x + containerWidth <= parentWidth;
+            const yInBounds = opt.y >= 0 && opt.y + containerHeight <= parentHeight;
+            return xInBounds && yInBounds;
+          });
+      
+          const best = (inBounds.length > 0 ? inBounds : options)
+            .sort((a, b) => a.dist - b.dist)[0];
+      
+          newX = best.x;
+          newY = best.y;
+        }
+      
+        const allowedRect = {
+          left: newX,
+          top: newY,
+          right: newX + containerWidth,
+          bottom: newY + containerHeight,
+        };
+      
+        if (onDrag) onDrag(allowedRect);
         setPosition({ x: newX, y: newY });
-      }
-    };
+      };
+      
+      
+      
 
     const handleEnd = () => {
       dragging.current = false;
@@ -80,14 +137,14 @@ export default function DraggableContainer({
     e.preventDefault();
     const point = getTouchOrMouse(e);
 
-    const rect = containerRef.current.getBoundingClientRect();
+    const rect = ref.current.getBoundingClientRect();
     offset.current = {
       x: point.clientX - rect.left,
       y: point.clientY - rect.top,
     };
 
-    if (containerRef.current?.offsetParent) {
-      containerParentRect.current = containerRef.current.offsetParent.getBoundingClientRect();
+    if (ref.current?.offsetParent) {
+      containerParentRect.current = ref.current.offsetParent.getBoundingClientRect();
     }
 
     dragging.current = true;
@@ -95,7 +152,7 @@ export default function DraggableContainer({
 
   return (
     <div
-      ref={containerRef}
+      ref={ref}
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
       style={{
