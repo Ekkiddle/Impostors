@@ -41,7 +41,7 @@ export default function SpaceBackground() {
   });
 
   return (
-    <div className="absolute top-0 left-0 w-full h-screen -z-10 overflow-hidden bg-black">
+    <div className="absolute top-0 left-0 w-full h-full -z-10 overflow-hidden bg-black">
       {dots.map((dot, index) => (
         <div key={index} style={createDotStyle(dot)} />
       ))}

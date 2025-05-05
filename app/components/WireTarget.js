@@ -35,7 +35,7 @@ export default function WireTarget({
             style={{
             top: 1,        
             left: 0,
-            width: '110%',
+            width: '120%',
             height: '90%',      
             backgroundColor: darkerColor,
             }}
@@ -45,7 +45,7 @@ export default function WireTarget({
             style={{
             top: size / 4,         // push it down by 1/4 of the original height
             left: 0,
-            width: '110%',
+            width: '120%',
             height: '50%',      // half the height
             backgroundColor: color,
             pointerEvents: 'none', // so it doesn't block mouse events

@@ -2,7 +2,6 @@
 import DraggableContainer from "./DraggableDiv";
 import { useRef, useState } from "react";
 import localFont from 'next/font/local'
-import Image from "next/image";
 
 const digi = localFont({ src: '../fonts/time.ttf' })
 
@@ -58,18 +57,16 @@ export default function CardTask() {
         }
     
         if (swipeDistance < swipeThreshold) {
-            console.log(swipeDistance, swipeThreshold)
             setTempMessage("Didn't swipe full length");
             return;
         }
     
-        if (swipeDuration < 1.5) {
-            console.log(swipeDuration);
+        if (swipeDuration < 0.5) {
             setTempMessage("Too fast");
             return;
         }
     
-        if (swipeDuration > 2.2) {
+        if (swipeDuration > 1) {
             setTempMessage("Too slow");
             return;
         }
@@ -89,13 +86,11 @@ export default function CardTask() {
                     if (((card.right > (swipeArea.right - swipeArea.width * 0.08)) && (start < card.left))){
                         setMessage("Remove Card");
                         setSwiped(true);
-                        console.log("Swipe right")
                         evaluateSwipe(true);
                     }
                     if (((card.left < (swipeArea.left + swipeArea.width * 0.08)) && (start > card.left))){
                         setMessage("Remove Card");
                         setSwiped(true);
-                        console.log("Swipe left")
                         evaluateSwipe(false);
                     }
                 }
