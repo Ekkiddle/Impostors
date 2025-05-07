@@ -44,9 +44,7 @@ function Asteroid({ data, onClick }) {
       alt="asteroid"
       onClick={handleClick}
       initial={{
-        x: data.spawnOnScreen
-          ? `${Math.random() * 100}vw`
-          : '-10vw',
+        x: data.spawnOnScreen ? `${Math.random() * 100}vw` : '-10vw',
         rotate: 0,
         opacity: 1,
       }}
@@ -71,21 +69,25 @@ function Asteroid({ data, onClick }) {
   );
 }
 
-export default function AsteroidField({onClick}) {
+export default function AsteroidField({ onClick }) {
   const [asteroids, setAsteroids] = useState([]);
   const containerRef = useRef(null);
 
   useEffect(() => {
     // Initial burst on screen
-    const initialBurst = Array.from({ length: 7 }, () =>
-      getRandomAsteroid(true)
-    );
+    const initialBurst = Array.from({ length: 7 }, () => getRandomAsteroid(true));
     setAsteroids(initialBurst);
 
     // Continuous spawn
     const spawnInterval = setInterval(() => {
-      setAsteroids((prev) => [...prev, getRandomAsteroid()]);
-    }, 1500);
+      setAsteroids((prev) => {
+        if (prev.length >= 15) {
+          const [, ...rest] = prev;
+          return [...rest, getRandomAsteroid()];
+        }
+        return [...prev, getRandomAsteroid()];
+      });
+    }, 1800);
 
     return () => clearInterval(spawnInterval);
   }, []);

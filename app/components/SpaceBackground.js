@@ -17,15 +17,26 @@ export default function SpaceBackground() {
       const animationDelay = -Math.random() * speed; // negative = mid-animation
 
       return {
+        id: Math.random().toString(36).substr(2, 9),
         size: Math.random() * 2 + 3, // 3–5px
         top: Math.random() * 100, // %
         left: Math.random() * 100, // %
         speed,
         animationDelay,
+        animationProgress: 0,  // Track animation progress
       };
     });
 
     setDots(newDots);
+
+    // Remove dots when they go off-screen
+    const interval = setInterval(() => {
+      setDots((prevDots) => 
+        prevDots.filter(dot => dot.left < 100)  // Remove dots that have gone past the right side of the screen
+      );
+    }, 100);
+
+    return () => clearInterval(interval);
   }, []);
 
   const createDotStyle = (dot) => ({
@@ -38,6 +49,9 @@ export default function SpaceBackground() {
     backgroundColor: "white",
     animation: `moveRight ${dot.speed}s linear infinite`,
     animationDelay: `${dot.animationDelay}s`,
+    animationIterationCount: "infinite",
+    animationPlayState: "running",
+    animationProgress: dot.animationProgress,
   });
 
   return (
