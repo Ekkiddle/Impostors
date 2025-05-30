@@ -3,7 +3,7 @@ import { DraggableDiv } from "../CustomDivs";
 import { useRef, useState } from "react";
 import localFont from 'next/font/local'
 
-const digi = localFont({ src: '../fonts/time.ttf' })
+const digi = localFont({ src: '../../fonts/time.ttf' })
 
 export default function CardTask() {
     const containerRef = useRef(null);
