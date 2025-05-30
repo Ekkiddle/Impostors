@@ -127,6 +127,7 @@ export default function SequenceTask() {
                 <div className="w-[45%] aspect-square grid grid-cols-3 gap-2">
                   {Array.from({ length: 9 }, (_, i) => (
                     <EmbossedDiv 
+                        key={i}
                         className='w-full aspect-square cursor-pointer bg-gray-400 hover:bg-gray-500 border-black border-3' 
                         innerDimensions={{ left: 10, right: 90, top:10, bottom:90}}
                         onClick={()=>handleButtonClick(i)} 
