@@ -80,24 +80,22 @@ export default function NavigateTask() {
 
     setDots(newDots);
     // Generate 3 monotonic increasing X and Y coordinates
-    const xs = [30, 50, 70]; // midpoints, will randomize around these
-    const ys = [30, 50, 70];
+    const MIN_DIST = 15;
+    const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    const points = [];
 
-    // Add randomness within bounds, keeping order
-    const randomizedCheckpoints = xs.map((baseX, i) => {
-        const jitterX = Math.round(baseX + (Math.random() * 40 - 20));
-        const jitterY = Math.round(ys[i] + (Math.random() * 40 - 20));
+    while (points.length < 3) {
+      console.log(points)
+      const x = Math.round(15 + Math.random() * 60);
+      const y = Math.round(15 + Math.random() * 60);
+      if (points.every(p => dist({ x: parseInt(p.x), y: parseInt(p.y) }, { x, y }) >= MIN_DIST)) {
+        points.push({ x: `${x}%`, y: `${y}%`, hit: false });
+        console.log(`Added point: ${x}%, ${y}%`);
+      }
+    }
 
-        return {
-        x: `${Math.min(Math.max(jitterX, 5), 85)}%`,
-        y: `${Math.min(Math.max(jitterY, 5), 85)}%`,
-        hit: false
-        };
-    });
-
-    // Sort by X and Y both to enforce a consistent path direction (no crossing)
-    //randomizedCheckpoints.sort((a, b) => parseFloat(a.x) - parseFloat(b.x));
-    setCheckpoints([...randomizedCheckpoints, { x: "90%", y: "90%", hit: false }])
+    points.push({ x: "90%", y: "90%", hit: false });
+    setCheckpoints(points);
   }, []);
 
   const getRelativeCoords = (e) => {
