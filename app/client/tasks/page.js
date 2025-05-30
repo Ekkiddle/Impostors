@@ -1,11 +1,11 @@
 'use client'
 
 import { useRef, useState } from "react";
-import WireTask from "@/app/components/WireTask";
-import CardTask from "@/app/components/SwipeCard";
-import AsteroidsTask from "@/app/components/AsteroidsTask";
-import SequenceTask from "@/app/components/SequenceTask";
-import NavigateTask from "@/app/components/NavigateTask";
+import WireTask from "@/app/components/tasks/WireTask";
+import CardTask from "@/app/components/tasks/SwipeCard";
+import AsteroidsTask from "@/app/components/tasks/AsteroidsTask";
+import SequenceTask from "@/app/components/tasks/SequenceTask";
+import NavigateTask from "@/app/components/tasks/NavigateTask";
 
 export default function TaskPage(){
     const [task, setTask] = useState(<WireTask />);

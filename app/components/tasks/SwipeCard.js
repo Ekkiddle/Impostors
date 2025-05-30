@@ -1,5 +1,5 @@
 // Swipe Card Task
-import { DraggableDiv } from "./CustomDivs";
+import { DraggableDiv } from "../CustomDivs";
 import { useRef, useState } from "react";
 import localFont from 'next/font/local'
 

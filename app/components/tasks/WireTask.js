@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { shuffleArray } from '../game/gameManager';
-import DraggableWire from './DraggableWire';
-import WireTarget from './WireTarget';
-import { darkenColor } from './SpaceManIcon';
+import { shuffleArray } from '../../game/gameManager';
+import DraggableWire from '../DraggableWire';
+import WireTarget from '../WireTarget';
+import { darkenColor } from '../SpaceManIcon';
 
 
 export default function WireTask({onSuccess}) {

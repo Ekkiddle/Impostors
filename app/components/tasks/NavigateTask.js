@@ -97,7 +97,6 @@ export default function NavigateTask() {
 
     // Sort by X and Y both to enforce a consistent path direction (no crossing)
     //randomizedCheckpoints.sort((a, b) => parseFloat(a.x) - parseFloat(b.x));
-    console.log([...randomizedCheckpoints, { x: "90%", y: "90%", hit: false }])
     setCheckpoints([...randomizedCheckpoints, { x: "90%", y: "90%", hit: false }])
   }, []);
 

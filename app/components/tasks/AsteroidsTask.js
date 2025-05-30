@@ -1,5 +1,5 @@
-import AsteroidField from "./Asteroid";
-import SpaceBackground from "./SpaceBackground";
+import AsteroidField from "../Asteroid";
+import SpaceBackground from "../SpaceBackground";
 import { useRef, useState, useEffect } from "react";
 
 export default function AsteroidsTask() {

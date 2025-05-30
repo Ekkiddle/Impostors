@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { EmbossedDiv } from './CustomDivs';
+import { EmbossedDiv } from '../CustomDivs';
 
 const getRandomSequence = () => {
   const sequence = [];
