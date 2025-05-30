@@ -10,6 +10,7 @@ export function DraggableDiv({
   height = 100,
   onDrag,
   forbiddenZones = [],
+  containWithinParent = false,
   children,
   style = {},
 }) {
@@ -35,11 +36,13 @@ export function DraggableDiv({
         const containerWidth = ref.current.getBoundingClientRect().width;
         const containerHeight = ref.current.getBoundingClientRect().height;
       
+        const parentLeft = containerParentRect.current.left;
+        const parentTop = containerParentRect.current.top;
         const parentWidth = containerParentRect.current.width;
         const parentHeight = containerParentRect.current.height;
       
-        let newX = point.clientX - containerParentRect.current.left - offset.current.x;
-        let newY = point.clientY - containerParentRect.current.top - offset.current.y;
+        let newX = point.clientX - parentLeft - offset.current.x;
+        let newY = point.clientY - parentTop - offset.current.y;
       
         const newRect = {
           left: newX,
@@ -52,8 +55,8 @@ export function DraggableDiv({
           const zone = zoneRef?.current?.getBoundingClientRect?.();
           if (!zone) continue;
       
-          const zoneLeft = zone.left - containerParentRect.current.left;
-          const zoneTop = zone.top - containerParentRect.current.top;
+          const zoneLeft = zone.left - parentLeft;
+          const zoneTop = zone.top - parentTop;
           const zoneRight = zoneLeft + zone.width;
           const zoneBottom = zoneTop + zone.height;
       
@@ -88,7 +91,6 @@ export function DraggableDiv({
             },
           ];
       
-          // Filter out any options that would go outside the parent container
           const inBounds = options.filter(opt => {
             const xInBounds = opt.x >= 0 && opt.x + containerWidth <= parentWidth;
             const yInBounds = opt.y >= 0 && opt.y + containerHeight <= parentHeight;
@@ -102,6 +104,12 @@ export function DraggableDiv({
           newY = best.y;
         }
       
+        // Optional containment inside parent
+        if (containWithinParent) {
+          newX = Math.max(0, Math.min(newX, parentWidth - containerWidth));
+          newY = Math.max(0, Math.min(newY, parentHeight - containerHeight));
+        }
+      
         const allowedRect = {
           left: newX,
           top: newY,
@@ -111,7 +119,7 @@ export function DraggableDiv({
       
         if (onDrag) onDrag(allowedRect);
         setPosition({ x: newX, y: newY });
-      };
+      };      
       
       
       
