@@ -5,19 +5,51 @@ import WireTask from "@/app/components/WireTask";
 import CardTask from "@/app/components/SwipeCard";
 import AsteroidsTask from "@/app/components/AsteroidsTask";
 import SequenceTask from "@/app/components/SequenceTask";
+import NavigateTask from "@/app/components/NavigateTask";
 
 export default function TaskPage(){
     const [task, setTask] = useState(<WireTask />);
 
+    const handleChange = (e) => {
+        const value = e.target.value;
+        switch (value) {
+          case "Wire":
+            setTask(<WireTask />);
+            break;
+          case "Card":
+            setTask(<CardTask />);
+            break;
+          case "Asteroids":
+            setTask(<AsteroidsTask />);
+            break;
+          case "Reactor":
+            setTask(<SequenceTask />);
+            break;
+          case "Navigate":
+            setTask(<NavigateTask />);
+            break;
+          default:
+            setTask(null);
+        }
+      };
+
     return (
     <div className="flex flex-col items-center h-full w-full">
-        <div className="flex flex-row gap-2">
-            <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<WireTask />)}>Wire Task</button>
-            <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<CardTask />)}>Card Task</button>
-            <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<AsteroidsTask />)}>Asteroid Task</button>
-            <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<SequenceTask />)}>Start Reactor</button>
+        <div className="w-fit">
+            <select
+                onChange={handleChange}
+                className="bg-blue-400 text-white p-2 rounded-lg"
+                defaultValue=""
+            >
+                <option value="" disabled>Select a Task</option>
+                <option value="Wire">Wire Task</option>
+                <option value="Card">Card Task</option>
+                <option value="Asteroids">Asteroid Task</option>
+                <option value="Reactor">Start Reactor</option>
+                <option value="Navigate">Navigation</option>
+            </select>
         </div>
-        <div className="max-w-[100vw] h-100 max-h-[110vw] w-100 border-black border-3">
+        <div className="max-w-[100vw] w-100 aspect-square border-black border-3">
             {task}
         </div>
     </div>
