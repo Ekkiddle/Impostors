@@ -1,5 +1,5 @@
 // Swipe Card Task
-import DraggableContainer from "./DraggableDiv";
+import { DraggableDiv } from "./CustomDivs";
 import { useRef, useState } from "react";
 import localFont from 'next/font/local'
 
@@ -124,7 +124,7 @@ export default function CardTask() {
 
     return (
         <div className={`w-full h-full relative bg-gray-600`}>
-            <DraggableContainer
+            <DraggableDiv
                 id="demo"
                 ref={cardRef}
                 defaultPosition={{ x: '20%', y: '75%' }}
@@ -137,7 +137,7 @@ export default function CardTask() {
                 <div className="w-full h-full rounded-md bg-gray-200 overflow-hidden z-10">
                 <img src="/card.png" alt="example" className="w-full h-full object-cover" />
                 </div>
-            </DraggableContainer>
+            </DraggableDiv>
             <div 
                 className="absolute w-full h-[20%] top-0 left-0 bg-gray-400 z-2"
                 ref={containerRef}

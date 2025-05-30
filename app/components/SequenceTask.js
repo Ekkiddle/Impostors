@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { EmbossedDiv } from './CustomDivs';
 
 const getRandomSequence = () => {
   const sequence = [];
@@ -79,23 +80,16 @@ export default function SequenceTask() {
       }
     };
   
-    const renderGridSquare = (index, isDisplay = false) => {
+    const renderGridSquare = (index) => {
         let isLit = false;
-        if (isDisplay && showSequence && highlightIndex >= 0 && !isPaused) {
+        if (showSequence && highlightIndex >= 0 && !isPaused) {
           isLit = sequence[highlightIndex] === index;
         }
       
         return (
           <div
             key={index}
-            className={`w-12 h-12 m-1 ${
-              isDisplay
-                ? isLit
-                  ? 'bg-blue-500'
-                  : 'bg-black'
-                : 'bg-blue-500 border-t-2 border-l-2 border-black border-b-2 border-r-2 border-black hover:bg-blue-600 cursor-pointer rounded-sm flex items-center justify-center text-white text-lg'
-            }`}
-            onClick={!isDisplay ? () => handleButtonClick(index) : undefined}
+            className={`w-[95%] aspect-square relative m-1 ${ isLit ? 'bg-blue-500' : 'bg-black'}`}
           >
           </div>
         );
@@ -103,31 +97,45 @@ export default function SequenceTask() {
       
       
   
-    return (
-        <div className="flex flex-col items-center justify-center h-full w-full bg-gray-100 p-[2%]">
-            <div className="flex space-x-3 mb-4">
+      return (
+        <div className="flex items-center justify-center h-full w-full bg-gray-300">
+          <EmbossedDiv className='w-full h-full bg-gray-300'>
+            
+            <div className="relative z-20 flex flex-col items-center justify-center h-full w-full p-6">
+              <div className="flex space-x-3 mb-4">
                 {Array.from({ length: 5 }, (_, i) => (
-                    <div
+                  <div
                     key={i}
-                    className={`w-4 h-4 rounded-full border-2 border-black ${
-                        error ? 'bg-red-500' : i < (stage-1) ? 'bg-green-500' : 'bg-gray-300'
+                    className={`w-4 h-4 rounded-full border-3 border-black ${
+                      error
+                        ? 'bg-red-500'
+                        : i < stage - 1
+                        ? 'bg-green-500'
+                        : 'bg-gray-300'
                     }`}
-                    />
+                  />
                 ))}
+              </div>
+      
+              <div className="flex flex-row justify-center gap-4 w-full">
+                {/* Display Section (Left) */}
+                <div className="w-[45%] aspect-square bg-black p-2 rounded-lg grid grid-cols-3 gap-1">
+                  {Array.from({ length: 9 }, (_, i) => renderGridSquare(i, true))}
+                </div>
+      
+                {/* Button Grid Section (Right) */}
+                <div className="w-[45%] aspect-square grid grid-cols-3 gap-2">
+                  {Array.from({ length: 9 }, (_, i) => (
+                    <EmbossedDiv 
+                        className='w-full aspect-square cursor-pointer bg-gray-400 hover:bg-gray-500 border-black border-3' 
+                        innerDimensions={{ left: 10, right: 90, top:10, bottom:90}}
+                        onClick={()=>handleButtonClick(i)} 
+                        >
+                    </EmbossedDiv>))}
+                </div>
+              </div>
             </div>
-
-        
-            <div className="flex flex-row justify-center gap-4 w-full">
-            {/* Display Section (Left) */}
-            <div className="w-[45%] aspect-square bg-black p-2 rounded-lg grid grid-cols-3 gap-1">
-                {Array.from({ length: 9 }, (_, i) => renderGridSquare(i, true))}
-            </div>
-        
-            {/* Button Grid Section (Right) */}
-            <div className="w-[45%] aspect-square grid grid-cols-3 gap-1">
-                {Array.from({ length: 9 }, (_, i) => renderGridSquare(i, false))}
-            </div>
-            </div>
+          </EmbossedDiv>
         </div>
-    );
-  }
+      );
+}      

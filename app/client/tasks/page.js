@@ -17,7 +17,7 @@ export default function TaskPage(){
             <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<AsteroidsTask />)}>Asteroid Task</button>
             <button className='bg-blue-400 rounded-lg' onClick={() => setTask(<SequenceTask />)}>Start Reactor</button>
         </div>
-        <div className="max-w-[100vw] h-100 max-h-[110vw] w-100">
+        <div className="max-w-[100vw] h-100 max-h-[110vw] w-100 border-black border-3">
             {task}
         </div>
     </div>

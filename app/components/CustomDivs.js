@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-export default function DraggableContainer({
+export function DraggableDiv({
   id,
   ref,
   defaultPosition = { x: 0, y: 0 },
@@ -170,3 +170,54 @@ export default function DraggableContainer({
     </div>
   );
 }
+
+export function EmbossedDiv({
+    children,
+    innerDimensions = { left: 5, right: 95, top: 15, bottom: 85 },
+    className = '',
+    style = {},
+    ...rest
+  }) {
+    const { left, right, top, bottom } = innerDimensions;
+  
+    // Build polygon strings dynamically using the passed dimensions
+    const leftHighlightClip = `polygon(0 0, ${left}% ${top}%, ${left}% ${bottom}%, 0 100%)`;
+    const rightShadowClip = `polygon(${right}% ${top}%, 100% 0, 100% 100%, ${right}% ${bottom}%)`;
+    const topHighlightClip = `polygon(0 0, 100% 0, ${right}% ${top}%, ${left}% ${top}%)`;
+    const bottomShadowClip = `polygon(${left}% ${bottom}%, ${right}% ${bottom}%, 100% 100%, 0 100%)`;
+  
+    return (
+      <div
+        className={`relative ${className}`}
+        style={{ position: 'relative', ...style }}
+        {...rest}
+      >
+        {/* Left Highlight */}
+        <div
+          className="absolute top-0 left-0 h-full w-full bg-white opacity-40 pointer-events-none"
+          style={{ clipPath: leftHighlightClip }}
+        />
+  
+        {/* Right Shadow */}
+        <div
+          className="absolute top-0 right-0 h-full w-full bg-black opacity-30 pointer-events-none"
+          style={{ clipPath: rightShadowClip }}
+        />
+  
+        {/* Top Highlight */}
+        <div
+          className="absolute top-0 left-0 w-full h-full bg-white opacity-70 pointer-events-none"
+          style={{ clipPath: topHighlightClip }}
+        />
+  
+        {/* Bottom Shadow */}
+        <div
+          className="absolute bottom-0 left-0 w-full h-full bg-black opacity-40 pointer-events-none"
+          style={{ clipPath: bottomShadowClip }}
+        />
+  
+        {/* Your content goes here */}
+        {children}
+      </div>
+    );
+  }
