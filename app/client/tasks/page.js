@@ -7,6 +7,7 @@ import AsteroidsTask from "@/app/components/tasks/AsteroidsTask";
 import SequenceTask from "@/app/components/tasks/SequenceTask";
 import NavigateTask from "@/app/components/tasks/NavigateTask";
 import SteeringTask from "@/app/components/tasks/SteeringTask";
+import ShieldsTask from "@/app/components/tasks/ShieldsTask";
 
 export default function TaskPage(){
     const [task, setTask] = useState(<WireTask />);
@@ -32,6 +33,9 @@ export default function TaskPage(){
           case "Stabilize":
             setTask(<SteeringTask />);
             break;
+          case "Shields":
+            setTask(<ShieldsTask />);
+            break;
           default:
             setTask(null);
         }
@@ -52,6 +56,7 @@ export default function TaskPage(){
                 <option value="Reactor">Start Reactor</option>
                 <option value="Navigate">Navigation</option>
                 <option value="Stabilize">Stabilize Steering</option>
+                <option value="Shields">Prime Shields</option>
             </select>
         </div>
         <div className="max-w-[100vw] w-100 aspect-square border-black border-3">
