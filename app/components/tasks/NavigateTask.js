@@ -85,12 +85,10 @@ export default function NavigateTask() {
     const points = [];
 
     while (points.length < 3) {
-      console.log(points)
       const x = Math.round(15 + Math.random() * 60);
       const y = Math.round(15 + Math.random() * 60);
       if (points.every(p => dist({ x: parseInt(p.x), y: parseInt(p.y) }, { x, y }) >= MIN_DIST)) {
         points.push({ x: `${x}%`, y: `${y}%`, hit: false });
-        console.log(`Added point: ${x}%, ${y}%`);
       }
     }
 
@@ -185,6 +183,7 @@ export default function NavigateTask() {
     // Success only if all checkpoints hit and ended on last checkpoint
     if (allHit && isInCircle(point, lastCheckpoint)) {
       setFinishedLines((prev) => [...prev, [...points, point]]);
+      console.log("Success!")
       setSuccess(true);
       setPoints([]);
     } else {
