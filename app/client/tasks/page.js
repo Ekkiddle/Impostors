@@ -6,6 +6,7 @@ import CardTask from "@/app/components/tasks/SwipeCard";
 import AsteroidsTask from "@/app/components/tasks/AsteroidsTask";
 import SequenceTask from "@/app/components/tasks/SequenceTask";
 import NavigateTask from "@/app/components/tasks/NavigateTask";
+import SteeringTask from "@/app/components/tasks/SteeringTask";
 
 export default function TaskPage(){
     const [task, setTask] = useState(<WireTask />);
@@ -28,6 +29,9 @@ export default function TaskPage(){
           case "Navigate":
             setTask(<NavigateTask />);
             break;
+          case "Stabilize":
+            setTask(<SteeringTask />);
+            break;
           default:
             setTask(null);
         }
@@ -47,6 +51,7 @@ export default function TaskPage(){
                 <option value="Asteroids">Asteroid Task</option>
                 <option value="Reactor">Start Reactor</option>
                 <option value="Navigate">Navigation</option>
+                <option value="Stabilize">Stabilize Steering</option>
             </select>
         </div>
         <div className="max-w-[100vw] w-100 aspect-square border-black border-3">
