@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { initPeer, connectToPeer, sendToAll, clearConnections } from '../peer/peerManager';
+import { initPeer, verifyHost, sendToAll, clearConnections } from '../peer/peerManager';
 import { handleClientMessages } from '../game/gameManager';
 
 import SpaceBackground from '../components/SpaceBackground';
@@ -11,20 +11,22 @@ export default function Lobby() {
   const [joined, setJoined] = useState(false);
   const [hostId, setHostId] = useState('');
   const [name, setName] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
 
   const handleJoinClick = async () => {
-    setJoined(true);
     clearConnections();
     await initPeer(null, handleClientMessages);
     console.log(`Attempting to connect to ${hostId}`);
-    
+    setHostId(hostId.toUpperCase())
     try {
-      await connectToPeer(hostId, handleClientMessages);
-      console.log("Connection successful!");
+      await verifyHost(hostId.toUpperCase(), handleClientMessages, null, null, setErrorMsg("Game not found."));
+      console.log("Host verified. Joining...");
       sendToAll(`name|${name}`);
+      setJoined(true);
     } catch (err) {
-      console.error("Failed to connect:", err);
-      alert("Could not connect to host. Please check the code and try again.");
+      console.error("Failed to verify host:", err);
+      setErrorMsg("Game not found.");
     }
   };
 
@@ -70,12 +72,15 @@ export default function Lobby() {
           >
             Join Game
           </button>
+          {errorMsg && (
+            <p className="text-red-500 mt-2 font-semibold">{errorMsg}</p>
+          )}
         </div>
       </div>
     );
   } else {
     return (
-      <div className="w-screen h-screen overflow-hidden">
+      <div className="w-screen h-screen overflow-hidden font-orbitron">
         <SpaceBackground />
         <div className='w-full h-full flex flex-col items-center justify-between p-10'>
           <div className='w-full flex flex-col items-center'>

@@ -30,6 +30,7 @@ const splitData = (data) => {
 
 export const handleHostMessages = (clientId, data) => {
     // function to handle messages sent to the host
+    if (typeof data === 'object') return;
     let {command, message} = splitData(data);
 
     if (command === 'name'){
@@ -60,11 +61,13 @@ export const handleHostMessages = (clientId, data) => {
 
 export const handleClientMessages = (hostId, data) => {
     // function to handle messages sent to the client from the host
+    if (typeof data === 'object') return;
     let {command, message} = splitData(data);
 
     if (command === 'players'){
       //set list of players
       const playersObj = JSON.parse(message);
+      console.log("Updating players")
       if (updatePlayersState) updatePlayersState(playersObj);
     }
 };

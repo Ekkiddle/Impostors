@@ -15,7 +15,7 @@ export default function HostScreen() {
   useEffect(() => {
     const init = async () => {
       console.log("Reconnecting");
-      await reconnect(handleHostMessages, null, (id)=> changeConnection(id, true), (id) => changeConnection(id, false));
+      await reconnect(handleHostMessages, null, (id)=> changeConnection(id, true), (id) => {changeConnection(id, false)});
       setMyId(getMyId());
       setLoading(false);
     };
