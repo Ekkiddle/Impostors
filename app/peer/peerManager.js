@@ -1,5 +1,6 @@
 // Manages peer to peer connections
 import Peer from 'peerjs';
+import { changeConnection } from '../game/gameManager';
 
 let peer;
 let connections = {};
@@ -59,8 +60,8 @@ export const initPeer = (onConnection, onRecieve, onReady, onClose, onError) => 
               return;
             } else if (data.type === 'pong') {
               const rtt = Date.now() - data.timestamp;
+              lastPings[conn.peer] = Date.now()
               console.log(`RTT from ${conn.peer}: ${rtt}ms`);
-              console.log("Connections:", connections)
             }
           }
 
@@ -108,6 +109,7 @@ export const connectToPeer = (peerId, onRecieve, onOpen, onClose, onError) => {
         if (data.type === 'ping') {
           conn.send({ type: 'pong', timestamp: data.timestamp });
         } else if (data.type === 'pong') {
+          lastPings[conn.peer] = Date.now()
           const rtt = Date.now() - data.timestamp;
           console.log(`RTT from ${peerId}: ${rtt}ms`);
         }
@@ -201,6 +203,7 @@ export const verifyHost = async (peerId, onRecieve, onOpen, onClose, onError) =>
 export const disconnectPeer = (peerId) => {
   let conn = connections[peerId];
   if (conn) {
+    console.log("Closing connection with peer ", peerId)
     conn.close();
     delete connections[conn.peer];
     connIds = connIds.filter(id => id !== conn.peer);
@@ -279,17 +282,26 @@ export const getConnIds = () => {
 // PING Methods
 // -----------------------------------------------------------------------------------------------
 
-const pingIntervals = {};
+const pingIntervals = {}; // stores the interval loops objects
+const lastPings = {}; // stores the time that the last pong was recieved
 
 const startPingLoop = (peerId, conn) => {
   if (pingIntervals[peerId]) return;
+  lastPings[peerId] = Date.now()
 
   pingIntervals[peerId] = setInterval(() => {
     if (conn.open) {
+      // Check that we have not timed out.
+      if (Date.now() - lastPings[peerId] > 5000){
+        // Essentially if 10 seconds have passed. (2 pings)
+        changeConnection(peerId, false);
+        disconnectPeer(peerId);
+        clearInterval(pingIntervals[peerId])
+      }
       console.log("Sending ping to ", peerId)
       conn.send({ type: 'ping', timestamp: Date.now() });
     }
-  }, 5000);
+  }, 2500);
 
   conn.on('close', () => {
     clearInterval(pingIntervals[peerId]);

@@ -3,6 +3,7 @@ import { sendToAll, sendToPeer } from "../peer/peerManager";
 
 
 const players = new Map(); // key: playerId, value: { id, name, role, alive, tasks }
+let inGame = false; // variable to set if we are in a game or not (if player leaves while not inGame, remove the player)
 
 // -------------------------------------------------------------
 // Link to playstate
@@ -95,6 +96,7 @@ const reloadPlayers = () => {
     const playersObj = JSON.parse(sessionStorage.getItem('players'));
     
     if (playersObj) {  // Ensure playersObj is not null
+      console.log("Players Object: ", playersObj)
       players.clear();  // Clear the current map to start fresh
 
       // Populate the map with the stored players
@@ -104,9 +106,9 @@ const reloadPlayers = () => {
 
       
       
-      const playersObj = Object.fromEntries(players);
+      const playersObj2 = Object.fromEntries(players);
       // Call the updatePlayersState function if defined
-      if (updatePlayersState) updatePlayersState(playersObj);
+      if (updatePlayersState) updatePlayersState(playersObj2);
     }
   }
 };
@@ -154,15 +156,23 @@ const changeAlive = (id, alive) => {
 
 export const changeConnection = (id, status) => {
   if (players.has(id)) {
+    // If status is false, and we are not inGame yet, remove the player.
+    if (!inGame && !status){
+      removePlayer(id)
+    }
     const existingPlayer = players.get(id);
-    existingPlayer.connection = status; // update the name
+    existingPlayer.connected = status; // update the name
     players.set(id, existingPlayer);
     broadcastPlayers();
   }
 }
 
 export const removePlayer = (id) => {
+  console.log("Removing Player ", id)
   players.delete(id);
+  const playersObj = Object.fromEntries(players);
+  const playerString = JSON.stringify(playersObj);
+  sessionStorage.setItem('players', playerString);
   broadcastPlayers();
 };
 

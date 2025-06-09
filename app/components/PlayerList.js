@@ -39,7 +39,6 @@ export default function PlayerList({ isHost }) {
           <h3 className="text-lg font-bold">{player.name}</h3>
           <p>Status: {player.alive ? 'Alive' : 'Dead'}</p>
           <p>Role: {player.role}</p>
-          
           {/* Connection status circle */}
           <div
             className={`w-4 h-4 rounded-full ml-auto ${player.connected ? 'bg-green-500' : 'bg-red-500'}`}

@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { initPeer, verifyHost, sendToAll, clearConnections, reconnect, getConnIds, sendToPeer } from '../peer/peerManager';
+import { initPeer, verifyHost, sendToAll, clearConnections, reconnect, getConnIds, sendToPeer, getMyId, disconnectPeer } from '../peer/peerManager';
 import { handleClientMessages } from '../game/gameManager';
+import { useGame } from '../game/gameProvider';
 
 import SpaceBackground from '../components/SpaceBackground';
 import PlayerList from '../components/PlayerList';
@@ -12,6 +13,8 @@ export default function Lobby() {
   const [hostId, setHostId] = useState('');
   const [name, setName] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const {players} = useGame()
 
   useEffect(() => {
     // Attempt reconnect. If I am connected to the host, then I should just set myself as joined.
@@ -23,8 +26,20 @@ export default function Lobby() {
 
       if (host){
         setHostId(host);
-        setJoined(true);
+        // I should also double check to make sure that my player is in the list. If not, I shouldn't set "joined"
         sendToPeer(host, "players|request")
+        // Wait a little bit of time before checking players list (500 ms should be fine...)
+        setTimeout(()=>{
+          console.log("Checking players")
+          if (players && players.has(getMyId())){
+            setJoined(true);
+          } else {
+            // disconnect from the host, and start process from scratch.
+            disconnectPeer(host)
+          }
+          
+        },500)
+        
       }
       
     } 
@@ -34,6 +49,7 @@ export default function Lobby() {
 
   const handleJoinClick = async () => {
     clearConnections();
+    setErrorMsg("");
     await initPeer(null, handleClientMessages);
     console.log(`Attempting to connect to ${hostId}`);
     setHostId(hostId.toUpperCase())
