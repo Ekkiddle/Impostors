@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { initPeer, verifyHost, sendToAll, clearConnections } from '../peer/peerManager';
+import React, { useEffect, useState } from 'react';
+import { initPeer, verifyHost, sendToAll, clearConnections, reconnect, getConnIds, sendToPeer } from '../peer/peerManager';
 import { handleClientMessages } from '../game/gameManager';
 
 import SpaceBackground from '../components/SpaceBackground';
@@ -12,6 +12,24 @@ export default function Lobby() {
   const [hostId, setHostId] = useState('');
   const [name, setName] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    // Attempt reconnect. If I am connected to the host, then I should just set myself as joined.
+    const init = async () => {
+      console.log("Attempting reconnect.")
+      await reconnect(handleClientMessages)
+      const host = getConnIds()[0];
+      console.log("Host: ", host)
+
+      if (host){
+        setHostId(host);
+        setJoined(true);
+        sendToPeer(host, "players|request")
+      }
+      
+    } 
+    init();
+  }, [])
 
 
   const handleJoinClick = async () => {

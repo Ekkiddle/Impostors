@@ -41,16 +41,19 @@ export const handleHostMessages = (clientId, data) => {
         changeName(clientId, message);
         console.log(`Changed name for ${clientId} to ${message}`);
       }
+    } else if (command === 'players'){
+      // For if the client requests the list of players. (Most of the game info is in this list. Including the tasks that
+      // players need to complete.) For now, I am just going to broadcast players to everyone.
+      // May change to that specific client.
+      broadcastPlayers();
     }
-    if (command === 'color'){
+    else if (command === 'color'){
       changeColor(clientId, message);
-    }
-    if (command === 'alive'){
+    } else if (command === 'alive'){
       changeAlive(clientId, message);
       // Impostors win if the person they killed makes them win
       checkWinConditions();
-    }
-    if (command === 'quit'){
+    } else if (command === 'quit'){
       let name = players.get(clientId).name;
       console.log(`${name} quit the game`);
       removePlayer(clientId);

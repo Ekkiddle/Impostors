@@ -10,6 +10,8 @@ const generateId = () => {
   return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 };
 
+
+// For Initiallizing self as a peer
 export const initPeer = (onConnection, onRecieve, onReady, onClose, onError) => {
   return new Promise((resolve, reject) => {
     const tryInit = (attempts = 0) => {
@@ -87,6 +89,7 @@ export const initPeer = (onConnection, onRecieve, onReady, onClose, onError) => 
   });
 };
 
+// For clients primarily (since I shouldn't necessarily be getting connections, unless the host attempts reconnect)
 export const connectToPeer = (peerId, onRecieve, onOpen, onClose, onError) => {
   return new Promise((resolve, reject) => {
     const conn = peer.connect(peerId);
@@ -130,92 +133,7 @@ export const connectToPeer = (peerId, onRecieve, onOpen, onClose, onError) => {
   });
 };
 
-export const disconnectPeer = (peerId) => {
-  let conn = connections[peerId];
-  if (conn) {
-    conn.close();
-    delete connections[conn.peer];
-    connIds = connIds.filter(id => id !== conn.peer);
-    sessionStorage.setItem('connections', JSON.stringify(connIds));
-  }
-};
-
-export const reconnect = async (onReceive, onReady, onOpen, onClose, onError) => {
-  try {
-    if (!peer) {
-      await initPeer(null, onReceive, onReady, onClose, onError);
-    } else {
-      console.log("Peer already exists. Skipping init.");
-    }
-
-    if (Object.keys(connections).length === 0) {
-      const conns = JSON.parse(sessionStorage.getItem('connections') || '[]');
-      console.log("Reconnecting to connections:", conns);
-
-      for (const connId of conns) {
-        try {
-          await connectToPeer(connId, onReceive, onOpen, onClose, onError);
-          console.log(`Reconnected and connected to peer ${connId}`);
-        } catch (connErr) {
-          console.error(`Failed to reconnect to ${connId}:`, connErr);
-          if (onError) onError(connErr);
-        }
-      }
-    } else {
-      console.log("Connections already established");
-    }
-  } catch (err) {
-    console.error("Reconnection failed:", err);
-    if (onError) onError(err);
-  }
-};
-
-export const clearConnections = () => {
-  for (const peerId of connIds) {
-    disconnectPeer(peerId);
-  }
-  connIds = [];
-  connections = {};
-  sessionStorage.setItem('connections', JSON.stringify(connIds));
-};
-
-export const sendToAll = (data) => {
-  console.log("Broadcasting to:", connections);
-  console.log("Broadcasting data:", data);
-  Object.values(connections).forEach((conn) => {
-    if (conn.open) conn.send(data);
-  });
-};
-
-export const sendToPeer = (peerId, data) => {
-  console.log(`Sending "${data}" to ${peerId}`);
-  if (connections[peerId]?.open) {
-    connections[peerId].send(data);
-  }
-};
-
-export const getMyId = () => {
-  return peer?.id;
-};
-
-const pingIntervals = {};
-
-const startPingLoop = (peerId, conn) => {
-  if (pingIntervals[peerId]) return;
-
-  pingIntervals[peerId] = setInterval(() => {
-    if (conn.open) {
-      console.log("Sending ping to ", peerId)
-      conn.send({ type: 'ping', timestamp: Date.now() });
-    }
-  }, 5000);
-
-  conn.on('close', () => {
-    clearInterval(pingIntervals[peerId]);
-    delete pingIntervals[peerId];
-  });
-};
-
+// Connect to host with verify.
 export const verifyHost = async (peerId, onRecieve, onOpen, onClose, onError) => {
   return new Promise(async (resolve, reject) => {
     let resolved = false;
@@ -276,6 +194,106 @@ export const verifyHost = async (peerId, onRecieve, onOpen, onClose, onError) =>
     } catch (err) {
       reject(err);
     }
+  });
+};
+
+// Disconnect
+export const disconnectPeer = (peerId) => {
+  let conn = connections[peerId];
+  if (conn) {
+    conn.close();
+    delete connections[conn.peer];
+    connIds = connIds.filter(id => id !== conn.peer);
+    sessionStorage.setItem('connections', JSON.stringify(connIds));
+  }
+};
+
+// For host/client
+export const reconnect = async (onReceive, onReady, onOpen, onClose, onError) => {
+  try {
+    if (!peer) {
+      await initPeer(null, onReceive, onReady, onClose, onError);
+    } else {
+      console.log("Peer already exists. Skipping init.");
+    }
+
+    if (Object.keys(connections).length === 0) {
+      const conns = JSON.parse(sessionStorage.getItem('connections') || '[]');
+      console.log("Reconnecting to connections:", conns);
+
+      for (const connId of conns) {
+        try {
+          await connectToPeer(connId, onReceive, onOpen, onClose, onError);
+          console.log(`Reconnected and connected to peer ${connId}`);
+        } catch (connErr) {
+          console.error(`Failed to reconnect to ${connId}:`, connErr);
+          if (onError) onError(connErr);
+        }
+      }
+    } else {
+      console.log("Connections already established");
+    }
+  } catch (err) {
+    console.error("Reconnection failed:", err);
+    if (onError) onError(err);
+  }
+};
+
+// This one works fine...
+export const clearConnections = () => {
+  for (const peerId of connIds) {
+    disconnectPeer(peerId);
+  }
+  connIds = [];
+  connections = {};
+  sessionStorage.setItem('connections', JSON.stringify(connIds));
+};
+
+// Broadcast
+export const sendToAll = (data) => {
+  console.log("Broadcasting to:", connections);
+  console.log("Broadcasting data:", data);
+  Object.values(connections).forEach((conn) => {
+    if (conn.open) conn.send(data);
+  });
+};
+
+// Single message to specific peer
+export const sendToPeer = (peerId, data) => {
+  console.log(`Sending "${data}" to ${peerId}`);
+  if (connections[peerId]?.open) {
+    connections[peerId].send(data);
+  }
+};
+
+// Getter...
+export const getMyId = () => {
+  return peer?.id;
+};
+
+export const getConnIds = () => {
+  return connIds;
+}
+
+// -----------------------------------------------------------------------------------------------
+// PING Methods
+// -----------------------------------------------------------------------------------------------
+
+const pingIntervals = {};
+
+const startPingLoop = (peerId, conn) => {
+  if (pingIntervals[peerId]) return;
+
+  pingIntervals[peerId] = setInterval(() => {
+    if (conn.open) {
+      console.log("Sending ping to ", peerId)
+      conn.send({ type: 'ping', timestamp: Date.now() });
+    }
+  }, 5000);
+
+  conn.on('close', () => {
+    clearInterval(pingIntervals[peerId]);
+    delete pingIntervals[peerId];
   });
 };
 
