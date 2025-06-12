@@ -54,7 +54,7 @@ export default function QRScanner({ onScan, onError }) {
 
   return (
     <div>
-      <div id="reader" className="w-[600px]"></div>
+      <div id="reader" className="w-full"></div>
       <p>{result}</p>
     </div>
   );
