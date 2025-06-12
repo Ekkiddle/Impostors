@@ -101,7 +101,10 @@ export default function AlignEngineTask() {
         setAngle(magnitude * sign);
 
         document.addEventListener("mouseup", handleMouseUp);
-        return () => document.removeEventListener("mouseup", handleMouseUp);
+        document.addEventListener("touchend", handleMouseUp)
+        return () => {
+            document.removeEventListener("touchend", handleMouseUp)
+            document.removeEventListener("mouseup", handleMouseUp);}
     }, []);
 
     useEffect(() => {
@@ -154,7 +157,9 @@ export default function AlignEngineTask() {
                         viewBox="0 0 100 100"
                         preserveAspectRatio="none"
                         onMouseDown={handleMouseDown}
+                        onTouchStart={handleMouseDown}
                         onMouseMove={handleMouseMove}
+                        onTouchMove={handleMouseMove}
                     >
                         {/* Curved path with rounded ends */}
                         <path
