@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fontsource/orbitron": "^5.2.5",
+    "@mui/material": "^7.1.1",
     "@next/font": "^14.2.15",
     "@zxing/browser": "^0.1.5",
     "framer-motion": "^12.9.7",
