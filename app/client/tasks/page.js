@@ -9,9 +9,10 @@ import NavigateTask from "@/app/components/tasks/NavigateTask";
 import SteeringTask from "@/app/components/tasks/SteeringTask";
 import ShieldsTask from "@/app/components/tasks/ShieldsTask";
 import AlignEngineTask from "@/app/components/tasks/AlignEngineTask";
+import QRScanner from "@/app/components/QRScanner";
 
 export default function TaskPage(){
-    const [task, setTask] = useState(<WireTask />);
+    const [task, setTask] = useState(<QRScanner />);
 
     const handleChange = (e) => {
         const value = e.target.value;
@@ -41,7 +42,7 @@ export default function TaskPage(){
             setTask(<AlignEngineTask />);
             break;
           default:
-            setTask(null);
+            setTask(<QRScanner />);
         }
       };
 
@@ -53,7 +54,7 @@ export default function TaskPage(){
                 className="bg-blue-400 text-white p-2 rounded-lg"
                 defaultValue=""
             >
-                <option value="" disabled>Select a Task</option>
+                <option value="" >Select a Task</option>
                 <option value="Wire">Wire Task</option>
                 <option value="Card">Card Task</option>
                 <option value="Asteroids">Asteroid Task</option>
